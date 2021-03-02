@@ -48,5 +48,36 @@ namespace Utilla.Utils
                 UnityEngine.Debug.Log("attempting to connect");
             }
         }
-    }
+
+        public static void JoinModdedLobby(string map)
+        {
+			string gameModeName = "infection_MOD_" + map;
+			PhotonNetworkController photonNetworkController = PhotonNetworkController.instance;
+			if (PhotonNetwork.InRoom && (string)PhotonNetwork.CurrentRoom.CustomProperties["gameMode"] != gameModeName)
+			{
+				photonNetworkController.currentGameType = gameModeName;
+				photonNetworkController.attemptingToConnect = true;
+				SkinnedMeshRenderer[] offlineVRRig = photonNetworkController.offlineVRRig;
+				for (int i = 0; i < offlineVRRig.Length; i++)
+				{
+					offlineVRRig[i].enabled = true;
+				}
+				PhotonNetwork.Disconnect();
+				return;
+			}
+			if (!PhotonNetwork.InRoom && !photonNetworkController.attemptingToConnect)
+			{
+				try
+				{
+					photonNetworkController.currentGameType = gameModeName;
+					photonNetworkController.attemptingToConnect = true;
+					photonNetworkController.AttemptToConnectToRoom();
+					Debug.Log("attempting to connect");
+				}
+				catch(Exception e) {
+					Debug.Log(e);
+				}
+			}
+		}
+	}
 }

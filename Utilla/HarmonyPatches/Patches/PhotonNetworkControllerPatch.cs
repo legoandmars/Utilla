@@ -19,7 +19,11 @@ namespace Utilla.HarmonyPatches
         private static void Postfix(PhotonNetworkController __instance)
         {
             // trigger events
-            bool isPrivate = __instance.isPrivate;
+            bool isPrivate = false;
+            if(PhotonNetwork.CurrentRoom != null)
+            {
+                isPrivate = !PhotonNetwork.CurrentRoom.IsVisible;
+            }
             Events.TriggerRoomJoin(isPrivate);
 
             // handle forcing private lobbies
@@ -27,6 +31,7 @@ namespace Utilla.HarmonyPatches
             var infos = BepInEx.Bootstrap.Chainloader.PluginInfos;
             foreach(var info in infos)
             {
+                if (info.Value == null) continue;
                 BaseUnityPlugin plugin = info.Value.Instance;
                 if (plugin == null) continue;
                 var attribute = plugin.GetType().GetCustomAttribute<ForcePrivateLobbyAttribute>();

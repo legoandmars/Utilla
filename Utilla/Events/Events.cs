@@ -10,8 +10,15 @@ namespace Utilla
 
         internal static void TriggerRoomJoin(bool isPrivate)
         {
-            UnityEngine.Debug.Log("Joining a room!");
-            UnityEngine.Debug.Log($"Private: {isPrivate}");
+            try
+            {
+                UnityEngine.Debug.Log("Joining a room!");
+                UnityEngine.Debug.Log($"Private: {isPrivate}");
+            }
+            catch(Exception e)
+            {
+                isPrivate = false;
+            }
             RoomJoined(isPrivate);
         }
     }
