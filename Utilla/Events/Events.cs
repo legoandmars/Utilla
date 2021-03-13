@@ -4,22 +4,23 @@ using System.Text;
 
 namespace Utilla
 {
-    public static class Events
+    public class Events
     {
-        public static event Action<bool> RoomJoined;
+        public static event EventHandler<RoomJoinedArgs> RoomJoined;
 
-        internal static void TriggerRoomJoin(bool isPrivate)
+        public virtual void TriggerRoomJoin(RoomJoinedArgs e)
         {
-            try
+            EventHandler<RoomJoinedArgs> handler = RoomJoined;
+            if (handler != null)
             {
-                UnityEngine.Debug.Log("Joining a room!");
-                UnityEngine.Debug.Log($"Private: {isPrivate}");
+                handler(this, e);
             }
-            catch(Exception e)
-            {
-                isPrivate = false;
-            }
-            RoomJoined(isPrivate);
         }
+
+        public class RoomJoinedArgs : EventArgs
+        {
+            public bool isPrivate { get; set; }
+        }
+
     }
 }

@@ -4,7 +4,6 @@ using System.Text;
 using HarmonyLib;
 using BepInEx;
 using System.Reflection;
-using System.Diagnostics;
 using Photon.Pun;
 using UnityEngine;
 using System.Linq;
@@ -16,20 +15,25 @@ namespace Utilla.HarmonyPatches
     [HarmonyPatch("OnJoinedRoom", MethodType.Normal)]
     internal class PhotonNetworkControllerPatch
     {
-        private static void Postfix(PhotonNetworkController __instance)
+        public static Events events;
+        private static void Postfix()
         {
             // trigger events
             bool isPrivate = false;
             if(PhotonNetwork.CurrentRoom != null)
             {
-                isPrivate = !PhotonNetwork.CurrentRoom.IsVisible;
+                isPrivate = !PhotonNetwork.NetworkingClient.CurrentRoom.IsVisible;
             }
-            Events.TriggerRoomJoin(isPrivate);
+            Debug.Log("IS PRIVATE?");
+            Debug.Log(isPrivate);
+            Events.RoomJoinedArgs args = new Events.RoomJoinedArgs();
+            args.isPrivate = isPrivate;
+            events.TriggerRoomJoin(args);
 
             // handle forcing private lobbies
             bool forcePrivateLobbies = false;
             var infos = BepInEx.Bootstrap.Chainloader.PluginInfos;
-            foreach(var info in infos)
+            foreach (var info in infos)
             {
                 if (info.Value == null) continue;
                 BaseUnityPlugin plugin = info.Value.Instance;
@@ -40,7 +44,7 @@ namespace Utilla.HarmonyPatches
 
             if (forcePrivateLobbies)
             {
-                RoomUtils.JoinPrivateLobby(__instance);
+                RoomUtils.JoinPrivateLobby();
             }
         }
     }
