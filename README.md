@@ -24,7 +24,7 @@ using Utilla;
 namespace ExamplePlugin
 {
     [BepInPlugin("org.legoandmars.gorillatag.exampleplugin", "Example Plugin", "1.0.0")]
-    [BepInDependency("org.legoandmars.gorillatag.utilla", "1.0.0")] // Make sure to add Utilla as a dependency!
+    [BepInDependency("org.legoandmars.gorillatag.utilla", "1.3.0")] // Make sure to add Utilla as a dependency!
     public class ExamplePlugin : BaseUnityPlugin
     {
         void Awake()
@@ -32,9 +32,10 @@ namespace ExamplePlugin
             Utilla.Events.RoomJoined += RoomJoined;
         }
 
-        private void RoomJoined(bool isPrivate)
+        private void RoomJoined(object sender, Events.RoomJoinedArgs e)
         {
-            if(isPrivate){
+            if(e != null && e.isPrivate != null && isPrivate)
+            {
                 // The room is private. Enable mod stuff.
             }
             else
@@ -57,7 +58,7 @@ using Utilla;
 namespace ExamplePlugin
 {
     [BepInPlugin("org.legoandmars.gorillatag.exampleplugin", "Example Plugin", "1.0.0")]
-    [BepInDependency("org.legoandmars.gorillatag.utilla", "1.0.0")] // Make sure to add Utilla as a dependency!
+    [BepInDependency("org.legoandmars.gorillatag.utilla", "1.3.0")] // Make sure to add Utilla as a dependency!
     [ForcePrivateLobby] // This will force the player out of public lobbies, and into private ones.
     public class ExamplePlugin : BaseUnityPlugin
     {
