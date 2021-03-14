@@ -34,7 +34,7 @@ namespace ExamplePlugin
 
         private void RoomJoined(object sender, Events.RoomJoinedArgs e)
         {
-            if(e != null && e.isPrivate != null && isPrivate)
+            if(e != null && e.isPrivate != null && e.isPrivate)
             {
                 // The room is private. Enable mod stuff.
             }
