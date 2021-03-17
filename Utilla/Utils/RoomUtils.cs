@@ -53,6 +53,7 @@ namespace Utilla.Utils
         {
 			string gameModeName = "infection_MOD_" + map;
 			PhotonNetworkController photonNetworkController = PhotonNetworkController.instance;
+            if (PhotonNetwork.InRoom && (string)PhotonNetwork.CurrentRoom.CustomProperties["gameMode"] == "privatetag") return;
 			if (PhotonNetwork.InRoom && (string)PhotonNetwork.CurrentRoom.CustomProperties["gameMode"] != gameModeName)
 			{
 				photonNetworkController.currentGameType = gameModeName;

@@ -8,7 +8,7 @@ using UnityEngine;
 namespace Utilla
 {
 
-    [BepInPlugin("org.legoandmars.gorillatag.utilla", "Utilla", "1.3.0")]
+    [BepInPlugin("org.legoandmars.gorillatag.utilla", "Utilla", "1.3.1")]
     public class Utilla : BaseUnityPlugin
     {
         void Awake()
