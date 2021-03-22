@@ -22,7 +22,9 @@ namespace Utilla.HarmonyPatches
             bool isPrivate = false;
             if(PhotonNetwork.CurrentRoom != null)
             {
-                isPrivate = !PhotonNetwork.NetworkingClient.CurrentRoom.IsVisible;
+                var currentRoom = PhotonNetwork.NetworkingClient.CurrentRoom;
+                isPrivate = !currentRoom.IsVisible ||
+                            currentRoom.CustomProperties.ContainsKey("Description"); // Room Browser rooms
             }
             Debug.Log("IS PRIVATE?");
             Debug.Log(isPrivate);
