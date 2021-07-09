@@ -11,7 +11,7 @@ using Utilla.Utils;
 
 namespace Utilla.HarmonyPatches
 {
-    [HarmonyPatch(typeof(PhotonNetworkController))]
+	[HarmonyPatch(typeof(PhotonNetworkController))]
     [HarmonyPatch("OnJoinedRoom", MethodType.Normal)]
     internal class PhotonNetworkControllerPatch
     {
