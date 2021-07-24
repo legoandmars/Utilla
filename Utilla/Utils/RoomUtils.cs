@@ -29,8 +29,8 @@ namespace Utilla.Utils
 			RoomCode = code;
 			__instance.customRoomID = code;
 			__instance.isPrivate = true;
-			if (PhotonNetwork.CurrentRoom.Name != RoomCode)
-			{
+			//if (PhotonNetwork.CurrentRoom.Name != RoomCode)
+			//{
 				Debug.Log("attempting to connect");
 				__instance.AttemptToJoinSpecificRoom(code);
 
@@ -38,7 +38,7 @@ namespace Utilla.Utils
 				{
 					PhotonNetworkPatch.setCasualPrivate = true;
 				}
-			}
+			//}
 			return;
 		}
 
