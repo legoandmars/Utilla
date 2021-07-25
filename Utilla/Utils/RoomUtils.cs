@@ -13,6 +13,10 @@ namespace Utilla.Utils
 	{
 		public static string RoomCode;
 
+		internal static string defaultQueue;
+
+		static GorillaNetworkJoinTrigger joinTrigger;
+
 		internal static string RandomString(int length)
 		{
 			System.Random random = new System.Random();
@@ -29,16 +33,13 @@ namespace Utilla.Utils
 			RoomCode = code;
 			__instance.customRoomID = code;
 			__instance.isPrivate = true;
-			//if (PhotonNetwork.CurrentRoom.Name != RoomCode)
-			//{
-				Debug.Log("attempting to connect");
-				__instance.AttemptToJoinSpecificRoom(code);
+			Debug.Log("attempting to connect");
+			__instance.AttemptToJoinSpecificRoom(code);
 
-				if (casual)
-				{
-					PhotonNetworkPatch.setCasualPrivate = true;
-				}
-			//}
+			if (casual)
+			{
+				PhotonNetworkPatch.setCasualPrivate = true;
+			}
 			return;
 		}
 
@@ -49,6 +50,7 @@ namespace Utilla.Utils
 
 			string queue = casual ? "CASUAL" : "DEFAULT";
 
+			defaultQueue = GorillaComputer.instance.currentQueue;
 			GorillaComputer.instance.currentQueue = queue;
 
 			// Setting player prefs is not needed
@@ -71,13 +73,16 @@ namespace Utilla.Utils
 				}
 			}
 
-			photonNetworkController.currentGameType = gameModeName;
-			GorillaNetworkJoinTrigger joinTrigger = new GameObject().AddComponent<GorillaNetworkJoinTrigger>();
+			//photonNetworkController.currentGameType = gameModeName;
+			if (joinTrigger == null)
+			{
+				joinTrigger = new GameObject("UtillaJoinTrigger").AddComponent<GorillaNetworkJoinTrigger>();
+				joinTrigger.makeSureThisIsDisabled = Array.Empty<GameObject>();
+				joinTrigger.makeSureThisIsEnabled = Array.Empty<GameObject>();
+				joinTrigger.joinScreens = Array.Empty<GorillaLevelScreen>();
+				joinTrigger.leaveScreens = Array.Empty<GorillaLevelScreen>();
+			}
 			joinTrigger.gameModeName = gameModeName;
-			joinTrigger.makeSureThisIsDisabled = new GameObject[0];
-			joinTrigger.makeSureThisIsEnabled = new GameObject[0];
-			joinTrigger.joinScreens = new GorillaLevelScreen[0];
-			joinTrigger.leaveScreens = new GorillaLevelScreen[0];
 			photonNetworkController.AttemptToJoinPublicRoom(joinTrigger);
 		}
 	}

@@ -48,6 +48,12 @@ namespace Utilla.HarmonyPatches
             {
                 RoomUtils.JoinPrivateLobby();
             }
+
+            // Reset the queue to what it was before
+            if (!RoomUtils.defaultQueue.IsNullOrWhiteSpace())
+			{
+                GorillaComputer.instance.currentQueue = RoomUtils.defaultQueue;
+			}
         }
     }
 }
