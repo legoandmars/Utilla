@@ -27,6 +27,7 @@ namespace Utilla.Utils
 
 		public static void JoinPrivateLobby() => JoinPrivateLobby(RoomCode, PhotonNetworkController.instance);
 		public static void JoinPrivateLobby(PhotonNetworkController __instance) => JoinPrivateLobby(RoomCode, __instance);
+		public static void JoinPrivateLobby(string code) => JoinPrivateLobby(code, false);
 		public static void JoinPrivateLobby(string code, bool casual = false) => JoinPrivateLobby(code, PhotonNetworkController.instance, casual);
 		public static void JoinPrivateLobby(string code, PhotonNetworkController __instance, bool casual = false)
 		{
@@ -43,6 +44,7 @@ namespace Utilla.Utils
 			return;
 		}
 
+		public static void JoinModdedLobby(string map) => JoinModdedLobby(map, false);
 		public static void JoinModdedLobby(string map, bool casual = false)
 		{
 			string gameModeName = "infection_MOD_" + map;
