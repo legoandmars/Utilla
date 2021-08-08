@@ -25,10 +25,25 @@ namespace Utilla.Utils
 			  .Select(s => s[random.Next(s.Length)]).ToArray());
 		}
 
+		/// <summary>
+		/// Joins a private room from a sepcifc room code.
+		/// </summary>
 		public static void JoinPrivateLobby() => JoinPrivateLobby(RoomCode, PhotonNetworkController.instance);
+
+		/// <inheritdoc cref="JoinPrivateLobby()"/>
+		/// <param name="__instance">Instance of PhotonNetworkController to use.</param>
 		public static void JoinPrivateLobby(PhotonNetworkController __instance) => JoinPrivateLobby(RoomCode, __instance);
+
+		/// <inheritdoc cref="JoinPrivateLobby()"/>
+		/// <param name="code">Room code to use.</param>
 		public static void JoinPrivateLobby(string code) => JoinPrivateLobby(code, false);
+
+		/// <inheritdoc cref="JoinPrivateLobby(string)"/>
+		/// <param name="casual">Whether or not to make the room casual.</param>
 		public static void JoinPrivateLobby(string code, bool casual = false) => JoinPrivateLobby(code, PhotonNetworkController.instance, casual);
+
+		/// <inheritdoc cref="JoinPrivateLobby(string, bool)"/>
+		/// <inheritdoc cref="JoinPrivateLobby(PhotonNetworkController)"/>
 		public static void JoinPrivateLobby(string code, PhotonNetworkController __instance, bool casual = false)
 		{
 			RoomCode = code;
@@ -44,7 +59,14 @@ namespace Utilla.Utils
 			return;
 		}
 
+		/// <summary>
+		/// Joins pseudo-public room using a queue.
+		/// </summary>
+		/// <param name="map">Name of the queue to use.</param>
 		public static void JoinModdedLobby(string map) => JoinModdedLobby(map, false);
+		
+		/// <inheritdoc cref="JoinModdedLobby(string)"/>
+		/// <param name="casual">Whether or not to make the room casual.</param>
 		public static void JoinModdedLobby(string map, bool casual = false)
 		{
 			string gameModeName = "infection_MOD_" + map;

@@ -75,6 +75,14 @@ If you'd like to join custom private lobbies with your mod, Utilla implements me
 ```cs
 Utilla.Utils.RoomUtils.JoinPrivateLobby() // Joins a private lobby with a random 6 character code
 Utilla.Utils.RoomUtils.JoinPrivateLobby("TestLobby") // Joins a private lobby with the code TestLobby
+Utilla.Utils.RoomUtils.JoinPrivateLobby("TestLobby", true) // Joins a private casual lobby with the code TestLobby
+```
+
+### Using custom queues
+If you'd like to use custom queues with your mod, Utilla implements methods for that as well.
+```cs
+Utilla.Utils.RoomUtils.JoinModdedLobby("TestQueue") // Joins a random room in the queue TestQueue
+Utilla.Utils.RoomUtils.JoinModdedLobby("TestQueue", true) // Joins a random casual room in the queue TestQueue
 ```
 
 ## Building

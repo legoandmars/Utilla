@@ -6,6 +6,9 @@ namespace Utilla
 {
     public class Events
     {
+        /// <summary>
+        /// An event that gets called whenever a room is joined.
+        /// </summary>
         public static event EventHandler<RoomJoinedArgs> RoomJoined;
 
         public virtual void TriggerRoomJoin(RoomJoinedArgs e)
@@ -19,6 +22,9 @@ namespace Utilla
 
         public class RoomJoinedArgs : EventArgs
         {
+            /// <summary>
+            /// Whether or not the room is private.
+            /// </summary>
             public bool isPrivate { get; set; }
         }
 
