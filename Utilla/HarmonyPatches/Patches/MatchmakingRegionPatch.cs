@@ -130,11 +130,12 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using GorillaNetworking;
 using HarmonyLib;
 using Photon.Pun;
 using UnityEngine;
 
-namespace Utilla.HarmonyPatches.Patches
+namespace Utilla.HarmonyPatches
 {
 	[HarmonyPatch(typeof(PhotonNetworkController))]
 	[HarmonyPatch("ProcessJoiningPublicRoomState", MethodType.Normal)]

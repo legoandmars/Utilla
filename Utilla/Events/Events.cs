@@ -11,14 +11,30 @@ namespace Utilla
         /// </summary>
         public static event EventHandler<RoomJoinedArgs> RoomJoined;
 
+        /// <summary>
+        /// An event that gets called whenever a room is left.
+        /// </summary>
+        public static event EventHandler<RoomJoinedArgs> RoomLeft;
+
+        /// <summary>
+        /// An event that gets called whenever the game has finished initializing.
+        /// </summary>
+        public static event EventHandler GameInitialized;
+
         public virtual void TriggerRoomJoin(RoomJoinedArgs e)
         {
-            EventHandler<RoomJoinedArgs> handler = RoomJoined;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            RoomJoined?.Invoke(this, e);
         }
+
+        public virtual void TriggerRoomLeft(RoomJoinedArgs e)
+		{
+            RoomLeft?.Invoke(this, e);
+		}
+
+        public virtual void TriggerGameInitialized()
+		{
+            GameInitialized?.Invoke(this, EventArgs.Empty);
+		}
 
         public class RoomJoinedArgs : EventArgs
         {
@@ -26,6 +42,11 @@ namespace Utilla
             /// Whether or not the room is private.
             /// </summary>
             public bool isPrivate { get; set; }
+
+            /// <summary>
+            /// The gamemode that the current lobby is 
+            /// </summary>
+            public string Gamemode { get; set; }
         }
 
     }
