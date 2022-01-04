@@ -20,6 +20,7 @@ namespace Utilla
 
 		const string ModdedDefault = "MODDED_DEFAULT";
 		const string ModdedCasual = "MODDED_CASUAL";
+		const string ModdedHunt = "MODDED_HUNT";
 		const int PageSize = 3;
 
 		const string UIRootPath = "Level/Forest/lower level/UI";
@@ -34,8 +35,9 @@ namespace Utilla
 		Text gamemodesText;
 		List<Gamemode> DefaultModdedGamemodes = new List<Gamemode>()
 		{
+			new Gamemode(ModdedCasual, "MODDED CASUAL", BaseGamemode.Casual),
 			new Gamemode(ModdedDefault, "MODDED", BaseGamemode.Infection),
-			new Gamemode(ModdedCasual, "MODDED CASUAL", BaseGamemode.Casual)
+			new Gamemode(ModdedHunt, "MODDED HUNT", BaseGamemode.Hunt)
 		};
 		List<Gamemode> gamemodes = new List<Gamemode>() { 
 			new Gamemode("CASUAL", "CASUAL", BaseGamemode.None),

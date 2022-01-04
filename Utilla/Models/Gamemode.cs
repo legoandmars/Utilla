@@ -2,11 +2,30 @@
 
 namespace Utilla.Models
 {
+	/// <summary>
+	/// The base gamemode for a gamemode to inherit.
+	/// </summary>
+	/// <remarks>
+	/// None should not be used from an external program.
+	/// </remarks>
 	public enum BaseGamemode
 	{
+		/// <summary>
+		/// No gamemode, only used for fully custom gamemodes.
+		/// </summary>
 		None,
+		/// <summary>
+		/// The regular infection (tag) gamemode.
+		/// </summary>
 		Infection, 
-		Casual
+		/// <summary>
+		/// Casual gamemode, no players are infected.
+		/// </summary>
+		Casual,
+		/// <summary>
+		/// Hunt gamemode, requires at least 4 players.
+		/// </summary>
+		Hunt
 	}
 
 	public class Gamemode {
