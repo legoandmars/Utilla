@@ -31,7 +31,7 @@ namespace ExamplePlugin
 {
     [BepInPlugin("org.legoandmars.gorillatag.exampleplugin", "Example Plugin", "1.0.0")]
     [BepInDependency("org.legoandmars.gorillatag.utilla", "1.5.0")] // Make sure to add Utilla 1.5.0 as a dependency!
-    [ModdedGamemode]
+    [ModdedGamemode] // Enable callbacks in default modded gamemodes
     public class ExamplePlugin : BaseUnityPlugin
     {
         bool inAllowedRoom = false;
@@ -68,17 +68,16 @@ Utilla 1.5.0 brings support for custom gamemodes to Gorilla Tag. A mod can regis
 ```cs
 [BepInPlugin("org.legoandmars.gorillatag.exampleplugin", "Example Plugin", "1.0.0")]
 [BepInDependency("org.legoandmars.gorillatag.utilla", "1.5.0")] // Make sure to add Utilla 1.5.0 as a dependency!
-[ModdedGamemode] // Work in the default modded gamemodes
-[ModdedGamemode("mygamemodeid", "MY GAMEMODE", Models.BaseGamemode.Casual)] // Work in a new casual gamemode called "MY GAMEMODE"
+[ModdedGamemode("mygamemodeid", "MY GAMEMODE", Models.BaseGamemode.Casual)] // Enable callbacks in a new casual gamemode called "MY GAMEMODE"
 public class ExamplePlugin : BaseUnityPlugin {}
 ```
 
-Additionally, a completely custom game manager can be used, by creating a class that inherits `GorillaGameManager`. Creating a custom gamemode requires advanced knowledge of Gorilla Tag's networking code.
+Additionally, a completely custom game manager can be used, by creating a class that inherits `GorillaGameManager`. Creating a custom gamemode requires advanced knowledge of Gorilla Tag's networking code. Currently, matchmaking does not work for fully custom gamemodes, but they can still be used through room codes.
 
 ```cs
 [BepInPlugin("org.legoandmars.gorillatag.exampleplugin", "Example Plugin", "1.0.0")]
 [BepInDependency("org.legoandmars.gorillatag.utilla", "1.5.0")] // Make sure to add Utilla 1.5.0 as a dependency!
-[ModdedGamemode("mygamemodeid", "MY GAMEMODE", typeof(MyGameManager))] // Work in a new custom gamemode using MyGameManager
+[ModdedGamemode("mygamemodeid", "MY GAMEMODE", typeof(MyGameManager))] // Enable callbacks in a new custom gamemode using MyGameManager
 public class ExamplePlugin : BaseUnityPlugin {}
 
 public class MyGameManager : BaseGameManager
