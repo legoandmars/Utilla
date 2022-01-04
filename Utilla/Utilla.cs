@@ -1,25 +1,39 @@
 ﻿using System;
 using BepInEx;
 using Utilla.HarmonyPatches;
-using System.Reflection;
 using Utilla.Utils;
 using UnityEngine;
+using System.Linq;
+using Photon.Realtime;
+using Photon.Pun;
 
 namespace Utilla
 {
 
-    [BepInPlugin("org.legoandmars.gorillatag.utilla", "Utilla", "1.4.0")]
+	[BepInPlugin("org.legoandmars.gorillatag.utilla", "Utilla", "1.5.0")]
     public class Utilla : BaseUnityPlugin
     {
+        static Events events = new Events();
+
         void Awake()
         {
             RoomUtils.RoomCode = RoomUtils.RandomString(6); // Generate a random room code in case we need it
 
             GameObject dataObject = new GameObject();
             DontDestroyOnLoad(dataObject);
-            PhotonNetworkControllerPatch.events = new Events();
+            gameObject.AddComponent<UtillaNetworkController>();
+
+            Events.GameInitialized += PostInitialized;
+
+            UtillaNetworkController.events = events;
+            PostInitializedPatch.events = events;
 
             UtillaPatches.ApplyHarmonyPatches();
         }
+
+        void PostInitialized(object sender, EventArgs e)
+		{
+			new GameObject("CustomGamemodesManager").AddComponent<GamemodeManager>();
+		}
     }
 }
