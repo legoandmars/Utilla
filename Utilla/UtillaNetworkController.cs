@@ -57,11 +57,7 @@ namespace Utilla
 			table.Add("mods", JsonUtility.ToJson(mods));
 			PhotonNetwork.LocalPlayer.SetCustomProperties(table);
 
-            // Reset the queue to what it was before
-            if (!RoomUtils.defaultQueue.IsNullOrWhiteSpace())
-			{
-                GorillaComputer.instance.currentQueue = RoomUtils.defaultQueue;
-			}
+			RoomUtils.ResetQueue();
         }
 
 		public override void OnLeftRoom()
