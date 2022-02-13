@@ -29,16 +29,21 @@ namespace Utilla.Models
 	}
 
 	public class Gamemode {
-		public string DisplayName { get; set; }
-		public string ID { get; set; }
-		public BaseGamemode BaseGamemode { get; set; }
-		public Type GameManager { get; set; }
+		const string GamemodePrefix = "MODDED_";
+
+		public string DisplayName { get; }
+		public string ID { get; }
+		public string GamemodeString { get; }
+		public BaseGamemode BaseGamemode { get; }
+		public Type GameManager { get; }
 
 		public Gamemode(string id, string displayName, BaseGamemode baseGamemode = BaseGamemode.Infection)
 		{
 			this.ID = id;
 			this.DisplayName = displayName;
 			this.BaseGamemode = baseGamemode;
+
+			GamemodeString = GamemodePrefix + ID + (BaseGamemode == BaseGamemode.None ? "" : BaseGamemode.ToString().ToUpper());
 		}
 
 		public Gamemode(string id, string displayName, Type gameManager)
@@ -47,12 +52,18 @@ namespace Utilla.Models
 			this.DisplayName = displayName;
 			this.BaseGamemode = BaseGamemode.None;
 			this.GameManager = gameManager;
+
+			GamemodeString = GamemodePrefix + ID;
 		}
 
-		public string GamemodeString()
+		/// <remarks>This should only be used interally to create base game gamemodes</remarks>
+		internal Gamemode(string id, string displayName)
 		{
-			if (BaseGamemode == BaseGamemode.None) return ID;
-			else return ID + BaseGamemode.ToString().ToUpper();
+			this.ID = id;
+			this.DisplayName = displayName;
+			this.BaseGamemode = BaseGamemode.None;
+
+			GamemodeString = ID;
 		}
 	}
 }

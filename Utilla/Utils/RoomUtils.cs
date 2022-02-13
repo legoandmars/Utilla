@@ -7,6 +7,7 @@ using UnityEngine;
 using System.Reflection;
 using Utilla.HarmonyPatches;
 using GorillaNetworking;
+using BepInEx;
 
 namespace Utilla.Utils
 {
@@ -109,6 +110,15 @@ namespace Utilla.Utils
 			}
 			joinTrigger.gameModeName = gameModeName;
 			photonNetworkController.AttemptToJoinPublicRoom(joinTrigger);
+		}
+
+		internal static void ResetQueue()
+		{
+            if (!defaultQueue.IsNullOrWhiteSpace())
+			{
+                GorillaComputer.instance.currentQueue = RoomUtils.defaultQueue;
+				defaultQueue = null;
+			}
 		}
 	}
 }
