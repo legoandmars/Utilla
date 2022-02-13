@@ -40,9 +40,9 @@ namespace Utilla
 			new Gamemode(ModdedHunt, "MODDED HUNT", BaseGamemode.Hunt)
 		};
 		List<Gamemode> gamemodes = new List<Gamemode>() { 
-			new Gamemode("CASUAL", "CASUAL", BaseGamemode.None),
-			new Gamemode("INFECTION", "INFECTION", BaseGamemode.None),
-			new Gamemode("HUNT", "HUNT", BaseGamemode.None)
+			new Gamemode("CASUAL", "CASUAL"),
+			new Gamemode("INFECTION", "INFECTION"),
+			new Gamemode("HUNT", "HUNT")
 		};
 		ModeSelectButton[] modeSelectButtons = Array.Empty<ModeSelectButton>();
 
@@ -272,7 +272,7 @@ namespace Utilla
 
 			foreach (var pluginInfo in pluginInfos)
 			{
-				if (pluginInfo.Gamemodes.Any(x => gamemode.Contains(x.GamemodeString())))
+				if (pluginInfo.Gamemodes.Any(x => gamemode.Contains(x.GamemodeString)))
 				{
 					pluginInfo.OnGamemodeJoin?.Invoke(gamemode);
 				}
@@ -285,7 +285,7 @@ namespace Utilla
 
 			foreach (var pluginInfo in pluginInfos)
 			{
-				if (pluginInfo.Gamemodes.Any(x => gamemode.Contains(x.GamemodeString())))
+				if (pluginInfo.Gamemodes.Any(x => gamemode.Contains(x.GamemodeString)))
 				{
 					pluginInfo.OnGamemodeLeave?.Invoke(gamemode);
 				}
@@ -319,7 +319,7 @@ namespace Utilla
 				if (i < currentGamemodes.Count)
 				{
 					modeSelectButtons[i].enabled = true;
-					modeSelectButtons[i].gameMode = currentGamemodes[i].GamemodeString();
+					modeSelectButtons[i].gameMode = currentGamemodes[i].GamemodeString;
 				}
 				else
 				{
