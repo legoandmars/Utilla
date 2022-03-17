@@ -23,17 +23,35 @@ namespace Utilla
 
         public virtual void TriggerRoomJoin(RoomJoinedArgs e)
         {
-            RoomJoined?.Invoke(this, e);
+            try
+			{
+				RoomJoined?.Invoke(this, e);
+			} catch (Exception ex)
+			{
+                UnityEngine.Debug.LogError($"Error in Utilla RoomJoined: {ex}");
+			}
         }
 
         public virtual void TriggerRoomLeft(RoomJoinedArgs e)
 		{
-            RoomLeft?.Invoke(this, e);
+            try
+			{
+				RoomLeft?.Invoke(this, e);
+			} catch (Exception ex)
+			{
+                UnityEngine.Debug.LogError($"Error in Utilla RoomLeft: {ex}");
+			}
 		}
 
         public virtual void TriggerGameInitialized()
 		{
-            GameInitialized?.Invoke(this, EventArgs.Empty);
+            try
+			{
+				GameInitialized?.Invoke(this, EventArgs.Empty);
+			} catch (Exception ex)
+			{
+                UnityEngine.Debug.LogError($"Error in Utilla GameInitialized: {ex}");
+			}
 		}
 
         public class RoomJoinedArgs : EventArgs
