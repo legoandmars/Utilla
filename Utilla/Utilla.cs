@@ -10,7 +10,7 @@ using Photon.Pun;
 namespace Utilla
 {
 
-	[BepInPlugin("org.legoandmars.gorillatag.utilla", "Utilla", "1.6.0")]
+	[BepInPlugin("org.legoandmars.gorillatag.utilla", "Utilla", "1.6.1")]
     public class Utilla : BaseUnityPlugin
     {
         static Events events = new Events();
