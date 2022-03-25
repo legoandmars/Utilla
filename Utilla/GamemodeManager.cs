@@ -24,7 +24,7 @@ namespace Utilla
 		const int PageSize = 3;
 
 		const string UIRootPath = "Level/forest/lower level/UI";
-		private const string AnchorPath = "modeselectbox/anchor";
+		private const string AnchorPath = "Selector Buttons/anchor";
 		private const string GamemodesListPath = "Tree Room Texts/Game Mode List Text";
 
 		const string BasePrefabPath = "CustomGameManager/";
