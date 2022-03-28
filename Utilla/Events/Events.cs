@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Utilla
 {
-    public class Events
+	public class Events
     {
         /// <summary>
         /// An event that gets called whenever a room is joined.
@@ -23,35 +23,17 @@ namespace Utilla
 
         public virtual void TriggerRoomJoin(RoomJoinedArgs e)
         {
-            try
-			{
-				RoomJoined?.Invoke(this, e);
-			} catch (Exception ex)
-			{
-                UnityEngine.Debug.LogError($"Error in Utilla RoomJoined: {ex}");
-			}
+			RoomJoined?.SafeInvoke(this, e);
         }
 
         public virtual void TriggerRoomLeft(RoomJoinedArgs e)
 		{
-            try
-			{
-				RoomLeft?.Invoke(this, e);
-			} catch (Exception ex)
-			{
-                UnityEngine.Debug.LogError($"Error in Utilla RoomLeft: {ex}");
-			}
+			RoomLeft?.SafeInvoke(this, e);
 		}
 
         public virtual void TriggerGameInitialized()
 		{
-            try
-			{
-				GameInitialized?.Invoke(this, EventArgs.Empty);
-			} catch (Exception ex)
-			{
-                UnityEngine.Debug.LogError($"Error in Utilla GameInitialized: {ex}");
-			}
+			GameInitialized?.SafeInvoke(this, EventArgs.Empty);
 		}
 
         public class RoomJoinedArgs : EventArgs
@@ -66,6 +48,5 @@ namespace Utilla
             /// </summary>
             public string Gamemode { get; set; }
         }
-
-    }
+	}
 }
