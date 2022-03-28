@@ -274,7 +274,14 @@ namespace Utilla
 			{
 				if (pluginInfo.Gamemodes.Any(x => gamemode.Contains(x.GamemodeString)))
 				{
-					pluginInfo.OnGamemodeJoin?.Invoke(gamemode);
+					try
+					{
+						pluginInfo.OnGamemodeJoin?.Invoke(gamemode);
+					}
+					catch (Exception e)
+					{
+						Debug.LogError(e);
+					}
 				}
 			}
 		}
@@ -287,7 +294,14 @@ namespace Utilla
 			{
 				if (pluginInfo.Gamemodes.Any(x => gamemode.Contains(x.GamemodeString)))
 				{
-					pluginInfo.OnGamemodeLeave?.Invoke(gamemode);
+					try
+					{
+						pluginInfo.OnGamemodeLeave?.Invoke(gamemode);
+					}
+					catch (Exception e)
+					{
+						Debug.LogError(e);
+					}
 				}
 			}
 		}
