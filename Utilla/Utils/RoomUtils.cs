@@ -30,7 +30,7 @@ namespace Utilla.Utils
 		/// <summary>
 		/// Joins a private room from a sepcifc room code.
 		/// </summary>
-		public static void JoinPrivateLobby() => JoinPrivateLobby(RoomCode, PhotonNetworkController.instance);
+		public static void JoinPrivateLobby() => JoinPrivateLobby(RoomCode, PhotonNetworkController.Instance);
 
 		/// <inheritdoc cref="JoinPrivateLobby()"/>
 		/// <param name="__instance">Instance of PhotonNetworkController to use.</param>
@@ -42,7 +42,7 @@ namespace Utilla.Utils
 
 		/// <inheritdoc cref="JoinPrivateLobby(string)"/>
 		/// <param name="casual">Whether or not to make the room casual.</param>
-		public static void JoinPrivateLobby(string code, bool casual = false) => JoinPrivateLobby(code, PhotonNetworkController.instance, casual);
+		public static void JoinPrivateLobby(string code, bool casual = false) => JoinPrivateLobby(code, PhotonNetworkController.Instance, casual);
 
 		/// <inheritdoc cref="JoinPrivateLobby(string, bool)"/>
 		/// <inheritdoc cref="JoinPrivateLobby(PhotonNetworkController)"/>
@@ -72,7 +72,7 @@ namespace Utilla.Utils
 		public static void JoinModdedLobby(string map, bool casual = false)
 		{
 			string gameModeName = "infection_MOD_" + map;
-			PhotonNetworkController photonNetworkController = PhotonNetworkController.instance;
+			PhotonNetworkController photonNetworkController = PhotonNetworkController.Instance;
 
 			string queue = casual ? "CASUAL" : "DEFAULT";
 
