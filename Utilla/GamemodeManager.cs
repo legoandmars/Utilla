@@ -53,9 +53,26 @@ namespace Utilla
 			{
 				var treehouseSelector = new GameObject("TreehouseSelector").AddComponent<GamemodeSelector>();
 								Transform treehouseParent = GameObject.Find("Level/forest/lower level/UI").transform;
-				treehouseSelector.Initialize(treehouseParent,
-						   treehouseParent.Find("Selector Buttons/anchor"),
-						   treehouseParent.Find("Tree Room Texts/Game Mode List Text"));
+
+				// child objects might be removed when gamemodes is released, keeping default behaviour for now
+				var treehouseButtonParent = treehouseParent.Find("Selector Buttons/anchor");
+				foreach(Transform child in treehouseButtonParent) {
+					if (child.gameObject.name == "DISABLE FOR BETA") {
+						treehouseButtonParent = child;
+						break;
+                    }
+                }
+
+				// gameobject name for the text object changed but might change back after gamemodes is released
+				var treehouseGamemodesList = treehouseParent.Find("Tree Room Texts");
+				foreach (Transform child in treehouseGamemodesList) {
+					if (child.gameObject.name == "Game Mode List Text" || child.gameObject.name == "Game Mode List Text DISABLE FOR BETA") {
+						treehouseGamemodesList = child;
+						break;
+					}
+				}
+
+				treehouseSelector.Initialize(treehouseParent, treehouseButtonParent, treehouseGamemodesList);
 			}
 			catch (Exception e)
 			{
@@ -66,9 +83,25 @@ namespace Utilla
 			{
 				var mountainSelector = new GameObject("MountainSelector").AddComponent<GamemodeSelector>();
 				Transform mountainParent = GameObject.Find("Level/mountain").transform;
-				mountainSelector.Initialize(mountainParent,
-						   mountainParent.Find("Geometry/goodigloo/modeselectbox (1)/anchor"),
-						   mountainParent.Find("UI/Text/Game Mode List Text (1)"));
+
+				// child objects might be removed when gamemodes is released, keeping default behaviour for now
+				var mountainButtonParent = mountainParent.Find("Geometry/goodigloo/modeselectbox (1)/anchor");
+				foreach(Transform child in mountainButtonParent) {
+					if (child.gameObject.name == "DISABLE FOR BETA") {
+						mountainButtonParent = child;
+                    }
+                }
+
+				// gameobject name for the text object changed but might change back after gamemodes is released
+				var mountainGamemodesList = mountainParent.Find("UI/Text");
+				foreach (Transform child in mountainGamemodesList) {
+					if (child.gameObject.name == "Game Mode List Text (1)" || child.gameObject.name == "Game Mode List Text (1) DISABLE FOR BETA") {
+						mountainGamemodesList = child;
+						break;
+                    }
+                }
+
+				mountainSelector.Initialize(mountainParent,mountainButtonParent, mountainGamemodesList);
 			}
 			catch (Exception e)
 			{
