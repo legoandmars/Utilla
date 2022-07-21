@@ -124,7 +124,7 @@ namespace Utilla
 			}
 			gamemodesText.text = displayText;
 
-			GorillaComputer.instance.OnModeSelectButtonPress(GorillaComputer.instance.currentGameMode);
+			GorillaComputer.instance.OnModeSelectButtonPress(GorillaComputer.instance.currentGameMode, GorillaComputer.instance.leftHanded);
 		}
 	}
 }
