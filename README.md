@@ -80,7 +80,7 @@ Additionally, a completely custom game manager can be used, by creating a class 
 [ModdedGamemode("mygamemodeid", "MY GAMEMODE", typeof(MyGameManager))] // Enable callbacks in a new custom gamemode using MyGameManager
 public class ExamplePlugin : BaseUnityPlugin {}
 
-public class MyGameManager : BaseGameManager
+public class MyGameManager : GorillaGameManager
 {
     public override string GameMode()
     {
