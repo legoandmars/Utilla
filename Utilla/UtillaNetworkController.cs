@@ -28,6 +28,18 @@ namespace Utilla
 
         Events.RoomJoinedArgs lastRoom;
 
+		private string assemblyHash;
+		private string AssemblyHash {
+			get {
+				if (assemblyHash != null) {
+					return assemblyHash;
+				} else {
+					assemblyHash = GetAssemblyHash();
+					return assemblyHash;
+				}
+			}
+		}
+  
 		public override void OnJoinedRoom()
 		{
 
@@ -57,7 +69,7 @@ namespace Utilla
 			var table = new Hashtable();
 			var mods = new DataClass();
 			mods.installedIDs = BepInEx.Bootstrap.Chainloader.PluginInfos.Select(x => x.Value.Metadata.GUID).ToArray();
-			mods.assemblyHash = GetAssemblyHash();
+			mods.assemblyHash = AssemblyHash;
 			table.Add("mods", JsonUtility.ToJson(mods));
 			PhotonNetwork.LocalPlayer.SetCustomProperties(table);
 
