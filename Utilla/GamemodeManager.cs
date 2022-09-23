@@ -18,19 +18,21 @@ namespace Utilla
 
 		const string BasePrefabPath = "CustomGameManager/";
 
-		public int PageCount => Mathf.CeilToInt(Gamemodes.Count() / 3f);
+		public int PageCount => Mathf.CeilToInt(Gamemodes.Count() / 4f);
 
 		List<Gamemode> DefaultModdedGamemodes = new List<Gamemode>()
 		{
 			new Gamemode("MODDED_CASUAL", "MODDED CASUAL", BaseGamemode.Casual),
 			new Gamemode("MODDED_DEFAULT", "MODDED", BaseGamemode.Infection),
-			new Gamemode("MODDED_HUNT", "MODDED HUNT", BaseGamemode.Hunt)
-		};
+			new Gamemode("MODDED_HUNT", "MODDED HUNT", BaseGamemode.Hunt),
+            new Gamemode("MODDED_BATTLE", "MODDED BRAWL", BaseGamemode.Paintbrawl)
+        };
 		public List<Gamemode> Gamemodes { get; private set; } = new List<Gamemode>() { 
 			new Gamemode("CASUAL", "CASUAL"),
 			new Gamemode("INFECTION", "INFECTION"),
-			new Gamemode("HUNT", "HUNT")
-		};
+			new Gamemode("HUNT", "HUNT"),
+            new Gamemode("BATTLE", "PAINTBRAWL")
+        };
 
 		List<PluginInfo> pluginInfos;
 
@@ -57,7 +59,7 @@ namespace Utilla
 				// child objects might be removed when gamemodes is released, keeping default behaviour for now
 				var treehouseButtonParent = treehouseParent.Find("Selector Buttons/anchor");
 				foreach(Transform child in treehouseButtonParent) {
-					if (child.gameObject.name == "DISABLE FOR BETA") {
+					if (child.gameObject.name == "ENABLE FOR BETA") {
 						treehouseButtonParent = child;
 						break;
                     }
@@ -66,7 +68,7 @@ namespace Utilla
 				// gameobject name for the text object changed but might change back after gamemodes is released
 				var treehouseGamemodesList = treehouseParent.Find("Tree Room Texts");
 				foreach (Transform child in treehouseGamemodesList) {
-					if (child.gameObject.name == "Game Mode List Text" || child.gameObject.name == "Game Mode List Text DISABLE FOR BETA") {
+					if (child.gameObject.name == "Game Mode List Text ENABLE FOR BETA") {
 						treehouseGamemodesList = child;
 						break;
 					}
@@ -87,7 +89,7 @@ namespace Utilla
 				// child objects might be removed when gamemodes is released, keeping default behaviour for now
 				var mountainButtonParent = mountainParent.Find("Geometry/goodigloo/modeselectbox (1)/anchor");
 				foreach(Transform child in mountainButtonParent) {
-					if (child.gameObject.name == "DISABLE FOR BETA") {
+					if (child.gameObject.name == "ENABLE FOR BETA (1)") {
 						mountainButtonParent = child;
                     }
                 }
@@ -95,7 +97,7 @@ namespace Utilla
 				// gameobject name for the text object changed but might change back after gamemodes is released
 				var mountainGamemodesList = mountainParent.Find("UI/Text");
 				foreach (Transform child in mountainGamemodesList) {
-					if (child.gameObject.name == "Game Mode List Text (1)" || child.gameObject.name == "Game Mode List Text (1) DISABLE FOR BETA") {
+					if (child.gameObject.name == "Game Mode List Text ENABLE FOR BETA (1)") {
 						mountainGamemodesList = child;
 						break;
                     }

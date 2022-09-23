@@ -25,8 +25,12 @@ namespace Utilla.Models
 		/// <summary>
 		/// Hunt gamemode, requires at least 4 players.
 		/// </summary>
-		Hunt
-	}
+		Hunt,
+        /// <summary>
+        /// Paintbrawl gamemode, a gamemode that lets you play a game of paintball with two or more players.
+        /// </summary>
+        Paintbrawl
+    }
 
 	public class Gamemode {
 		const string GamemodePrefix = "MODDED_";
