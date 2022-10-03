@@ -33,7 +33,7 @@ namespace Utilla.Models
     }
 
 	public class Gamemode {
-		const string GamemodePrefix = "MODDED_";
+		public const string GamemodePrefix = "MODDED_";
 
 		public string DisplayName { get; }
 		public string ID { get; }
