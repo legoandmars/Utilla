@@ -10,7 +10,7 @@ namespace Utilla
 {
 	public class GamemodeSelector : MonoBehaviour
 	{
-		const int PageSize = 3;
+		const int PageSize = 4;
 
 		ModeSelectButton[] modeSelectButtons = Array.Empty<ModeSelectButton>();
 
@@ -27,10 +27,10 @@ namespace Utilla
 			modeSelectButtons = buttons.Select(x => x.GetComponent<ModeSelectButton>()).ToArray();
 
 			gamemodesText = gamemodesList.gameObject.GetComponent<Text>();
-			gamemodesText.lineSpacing = 2.2f;
-			gamemodesText.transform.localScale *= 0.75f;
-			gamemodesText.transform.position += gamemodesText.transform.right * 0.1f;
-			gamemodesText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            gamemodesText.lineSpacing = 1.06f * 1.2f;
+            gamemodesText.transform.localScale *= 0.85f;
+            gamemodesText.transform.position += gamemodesText.transform.right * 0.05f;
+            gamemodesText.horizontalOverflow = HorizontalWrapMode.Overflow;
 
 			CreatePageButtons(buttons.First().gameObject);
 
@@ -50,9 +50,10 @@ namespace Utilla
 				button.GetComponent<Renderer>().material = buttonMaterial;
 				button.transform.parent = templateButton.transform.parent;
 				button.transform.localRotation = templateButton.transform.localRotation;
-				button.transform.localScale = templateButton.transform.localScale;
+				button.transform.localScale = Vector3.one * 0.1427168f; // shouldn't hurt anyone for now 
 
-				button.transform.GetChild(0).gameObject.SetActive(true);
+
+                button.transform.GetChild(0).gameObject.SetActive(true);
 				Text buttonText = button.GetComponentInChildren<Text>();
 				if (buttonText != null)
 				{

@@ -42,11 +42,10 @@ namespace Utilla
   
 		public override void OnJoinedRoom()
 		{
-
             // trigger events
             bool isPrivate = false;
             string gamemode = "";
-            if(PhotonNetwork.CurrentRoom != null)
+            if (PhotonNetwork.CurrentRoom != null)
             {
                 var currentRoom = PhotonNetwork.NetworkingClient.CurrentRoom;
                 isPrivate = !currentRoom.IsVisible ||
@@ -56,6 +55,32 @@ namespace Utilla
                     gamemode = gamemodeObject as string;
 				}
             }
+
+			// TODO: Generate dynamically
+			var prefix = "ERROR";
+			if (gamemode.Contains(Models.Gamemode.GamemodePrefix))
+			{
+				prefix = "CUSTOM";
+            }
+			else
+            {
+                var dict = new Dictionary<string, string> {
+					{ "INFECTION", "INFECTION" },
+                    { "CASUAL", "CASUAL"},
+                    { "HUNT", "HUNT" },
+                    { "BATTLE", "PAINTBRAWL"},
+				};
+
+				foreach (var item in dict)
+                {
+					if (gamemode.Contains(item.Key))
+                    {
+						prefix = item.Value;
+						break;
+                    }
+                } 
+            }
+			GorillaComputer.instance.currentGameModeText.text = "CURRENT MODE\n" + prefix;
 
 			Events.RoomJoinedArgs args = new Events.RoomJoinedArgs
             {
@@ -100,6 +125,8 @@ namespace Utilla
 				events.TriggerRoomLeft(lastRoom);
 				lastRoom = null;
 			}
+
+			GorillaComputer.instance.currentGameModeText.text = "CURRENT MODE\n-NOT IN ROOM-";
 		}
 	}
 }
