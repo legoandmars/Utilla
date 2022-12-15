@@ -54,7 +54,7 @@ namespace Utilla
 			try
 			{
 				var treehouseSelector = new GameObject("TreehouseSelector").AddComponent<GamemodeSelector>();
-								Transform treehouseParent = GameObject.Find("Level/forest/lower level/UI").transform;
+								Transform treehouseParent = GameObject.Find("Level/lower level/UI").transform;
 
 				// child objects might be removed when gamemodes is released, keeping default behaviour for now
 				var treehouseButtonParent = treehouseParent.Find("Selector Buttons/anchor");
@@ -78,7 +78,7 @@ namespace Utilla
 			}
 			catch (Exception e)
 			{
-				Debug.LogError($"Utilla: Failed to initialize TreehouseSelector: {e}");
+				Debug.LogError($"Utilla: Failed to initialize Forest selector: {e}");
 			}
 
 			try
@@ -107,9 +107,42 @@ namespace Utilla
 			}
 			catch (Exception e)
 			{
-				Debug.LogError($"Utilla: Failed to initialize MountainSelector: {e}");
+				Debug.LogError($"Utilla: Failed to initialize Mountain selector: {e}");
 			}
-		}
+
+            try
+            {
+                var cloudSelector = new GameObject("CloudSelector").AddComponent<GamemodeSelector>();
+                Transform cloudParent = GameObject.Find("Level/skyjungle/UI/").transform;
+
+                // child objects might be removed when gamemodes is released, keeping default behaviour for now
+                var cloudButtonParent = cloudParent.Find("modeselectbox (2)/anchor/");
+                foreach (Transform child in cloudButtonParent)
+                {
+                    if (child.gameObject.name == "ENABLE FOR BETA (1)")
+                    {
+                        cloudButtonParent = child;
+                    }
+                }
+
+                // gameobject name for the text object changed but might change back after gamemodes is released
+                var cloudGamemodesList = cloudParent.Find("Text");
+                foreach (Transform child in cloudGamemodesList)
+                {
+                    if (child.gameObject.name == "Game Mode List Text ENABLE FOR BETA (2)")
+                    {
+                        cloudGamemodesList = child;
+                        break;
+                    }
+                }
+
+                cloudSelector.Initialize(cloudParent, cloudButtonParent, cloudGamemodesList);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Utilla: Failed to initialize Cloud selector: {e}");
+            }
+        }
 
 		List<Gamemode> GetGamemodes(List<PluginInfo> infos)
 		{

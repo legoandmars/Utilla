@@ -278,8 +278,5 @@
     <Reference Include="UnityEngine.XRModule">
       <HintPath>$(GameAssemblyPath)\UnityEngine.XRModule.dll</HintPath>
     </Reference>
-    <Reference Include="websocket-sharp">
-      <HintPath>$(GameAssemblyPath)\websocket-sharp.dll</HintPath>
-    </Reference>
   </ItemGroup>
 </Project>

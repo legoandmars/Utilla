@@ -52,8 +52,7 @@ namespace Utilla
 				button.transform.localRotation = templateButton.transform.localRotation;
 				button.transform.localScale = Vector3.one * 0.1427168f; // shouldn't hurt anyone for now 
 
-
-                button.transform.GetChild(0).gameObject.SetActive(true);
+				if (button.transform.childCount != 0) button.transform.GetChild(0).gameObject.SetActive(true);
 				Text buttonText = button.GetComponentInChildren<Text>();
 				if (buttonText != null)
 				{
