@@ -15,7 +15,6 @@ namespace Utilla
 	{
 		public static GamemodeManager Instance { get; private set; }
 
-
 		const string BasePrefabPath = "CustomGameManager/";
 
 		public int PageCount => Mathf.CeilToInt(Gamemodes.Count() / 4f);
@@ -51,64 +50,45 @@ namespace Utilla
 			Gamemodes.AddRange(GetGamemodes(pluginInfos));
 			Gamemodes.ForEach(gamemode => AddGamemodeToPrefabPool(gamemode));
 
+			InitializeSelector("TreehouseSelector", "Level/lower level/UI", "Selector Buttons/anchor", "Tree Room Texts");
+			InitializeSelector("MountainSelector", "Level/mountain", "Geometry/goodigloo/modeselectbox (1)/anchor", "UI/Text");
+			InitializeSelector("SkySelector", "Level/skyjungle/UI", "modeselectbox (2)/anchor", "Text");
+		}
+
+		void InitializeSelector(string name, string parentPath, string buttonPath, string gamemodesPath)
+		{
 			try
 			{
-				var treehouseSelector = new GameObject("TreehouseSelector").AddComponent<GamemodeSelector>();
-								Transform treehouseParent = GameObject.Find("Level/forest/lower level/UI").transform;
+				var selector = new GameObject(name).AddComponent<GamemodeSelector>();
+				Transform parent = GameObject.Find(parentPath).transform;
 
 				// child objects might be removed when gamemodes is released, keeping default behaviour for now
-				var treehouseButtonParent = treehouseParent.Find("Selector Buttons/anchor");
-				foreach(Transform child in treehouseButtonParent) {
-					if (child.gameObject.name == "ENABLE FOR BETA") {
-						treehouseButtonParent = child;
-						break;
-                    }
-                }
-
-				// gameobject name for the text object changed but might change back after gamemodes is released
-				var treehouseGamemodesList = treehouseParent.Find("Tree Room Texts");
-				foreach (Transform child in treehouseGamemodesList) {
-					if (child.gameObject.name == "Game Mode List Text ENABLE FOR BETA") {
-						treehouseGamemodesList = child;
+				var ButtonParent = parent.Find(buttonPath);
+				foreach(Transform child in ButtonParent) {
+					if (child.gameObject.name.StartsWith("ENABLE FOR BETA"))
+					{
+						ButtonParent = child;
 						break;
 					}
 				}
 
-				treehouseSelector.Initialize(treehouseParent, treehouseButtonParent, treehouseGamemodesList);
-			}
-			catch (Exception e)
-			{
-				Debug.LogError($"Utilla: Failed to initialize TreehouseSelector: {e}");
-			}
-
-			try
-			{
-				var mountainSelector = new GameObject("MountainSelector").AddComponent<GamemodeSelector>();
-				Transform mountainParent = GameObject.Find("Level/mountain").transform;
-
-				// child objects might be removed when gamemodes is released, keeping default behaviour for now
-				var mountainButtonParent = mountainParent.Find("Geometry/goodigloo/modeselectbox (1)/anchor");
-				foreach(Transform child in mountainButtonParent) {
-					if (child.gameObject.name == "ENABLE FOR BETA (1)") {
-						mountainButtonParent = child;
-                    }
-                }
-
 				// gameobject name for the text object changed but might change back after gamemodes is released
-				var mountainGamemodesList = mountainParent.Find("UI/Text");
-				foreach (Transform child in mountainGamemodesList) {
-					if (child.gameObject.name == "Game Mode List Text ENABLE FOR BETA (1)") {
-						mountainGamemodesList = child;
+				var GamemodesList = parent.Find(gamemodesPath);
+				foreach (Transform child in GamemodesList) {
+					if (child.gameObject.name.StartsWith("Game Mode List Text ENABLE FOR BETA"))
+					{
+						GamemodesList = child;
 						break;
-                    }
-                }
+					}
+				}
 
-				mountainSelector.Initialize(mountainParent,mountainButtonParent, mountainGamemodesList);
+				selector.Initialize(parent, ButtonParent, GamemodesList);
 			}
 			catch (Exception e)
 			{
-				Debug.LogError($"Utilla: Failed to initialize MountainSelector: {e}");
+				Debug.LogError($"Utilla: Failed to initialize {name}: {e}");
 			}
+
 		}
 
 		List<Gamemode> GetGamemodes(List<PluginInfo> infos)
