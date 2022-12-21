@@ -37,6 +37,7 @@ namespace Utilla
 			ShowPage(0);
 		}
 
+		static GameObject fallbackTemplateButton = null;
 		void CreatePageButtons(GameObject templateButton)
 		{
 			GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -45,13 +46,12 @@ namespace Utilla
 
 			GameObject CreatePageButton(string text, Action onPressed)
 			{
-				GameObject button = GameObject.Instantiate(templateButton);
+				GameObject button = GameObject.Instantiate(templateButton.transform.childCount == 0 ? fallbackTemplateButton : templateButton);
 				button.GetComponent<MeshFilter>().mesh = meshFilter.mesh;
 				button.GetComponent<Renderer>().material = buttonMaterial;
 				button.transform.parent = templateButton.transform.parent;
 				button.transform.localRotation = templateButton.transform.localRotation;
 				button.transform.localScale = Vector3.one * 0.1427168f; // shouldn't hurt anyone for now 
-
 
                 button.transform.GetChild(0).gameObject.SetActive(true);
 				Text buttonText = button.GetComponentInChildren<Text>();
@@ -80,7 +80,13 @@ namespace Utilla
 			previousPageButton.transform.localPosition = new Vector3(-0.575f, -0.318f, previousPageButton.transform.position.z);
 
 			Destroy(cube);
+
+			if (templateButton.transform.childCount != 0)
+			{
+				fallbackTemplateButton = templateButton;
+			}
 		}
+
 		public void NextPage()
 		{
 			if (page < GamemodeManager.Instance.PageCount - 1)
