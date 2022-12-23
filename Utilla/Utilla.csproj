@@ -62,26 +62,14 @@
     <Reference Include="PlayFab">
       <HintPath>$(GameAssemblyPath)\PlayFab.dll</HintPath>
     </Reference>
-    <Reference Include="System.EnterpriseServices">
-      <HintPath>$(GameAssemblyPath)\System.EnterpriseServices.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ServiceModel.Internals">
-      <HintPath>$(GameAssemblyPath)\System.ServiceModel.Internals.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Animation.Rigging">
       <HintPath>$(GameAssemblyPath)\Unity.Animation.Rigging.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Burst">
       <HintPath>$(GameAssemblyPath)\Unity.Burst.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.Burst.Unsafe">
-      <HintPath>$(GameAssemblyPath)\Unity.Burst.Unsafe.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.InputSystem">
       <HintPath>$(GameAssemblyPath)\Unity.InputSystem.dll</HintPath>
-    </Reference>
-    <Reference Include="Unity.Mathematics">
-      <HintPath>$(GameAssemblyPath)\Unity.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
       <HintPath>$(GameAssemblyPath)\Unity.Timeline.dll</HintPath>
@@ -271,9 +259,6 @@
     </Reference>
     <Reference Include="UnityEngine.WindModule">
       <HintPath>$(GameAssemblyPath)\UnityEngine.WindModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.XR.LegacyInputHelpers">
-      <HintPath>$(GameAssemblyPath)\UnityEngine.XR.LegacyInputHelpers.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.XRModule">
       <HintPath>$(GameAssemblyPath)\UnityEngine.XRModule.dll</HintPath>
