@@ -14,7 +14,6 @@ namespace Utilla
 
 		ModeSelectButton[] modeSelectButtons = Array.Empty<ModeSelectButton>();
 
-		static Material buttonMaterial = Resources.Load<Material>("objects/treeroom/materials/plastic");
 		Text gamemodesText;
 
 		int page;
@@ -48,7 +47,7 @@ namespace Utilla
 			{
 				GameObject button = GameObject.Instantiate(templateButton.transform.childCount == 0 ? fallbackTemplateButton : templateButton);
 				button.GetComponent<MeshFilter>().mesh = meshFilter.mesh;
-				button.GetComponent<Renderer>().material = buttonMaterial;
+				button.GetComponent<Renderer>().material = templateButton.GetComponent<Renderer>().material;
 				button.transform.parent = templateButton.transform.parent;
 				button.transform.localRotation = templateButton.transform.localRotation;
 				button.transform.localScale = Vector3.one * 0.1427168f; // shouldn't hurt anyone for now 
