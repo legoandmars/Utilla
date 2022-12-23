@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 using GorillaNetworking;
 using Utilla.Models;
+using UnityEditor;
 
 namespace Utilla
 {
@@ -14,16 +15,15 @@ namespace Utilla
 
 		ModeSelectButton[] modeSelectButtons = Array.Empty<ModeSelectButton>();
 
-		static Material buttonMaterial = Resources.Load<Material>("objects/treeroom/materials/plastic");
-		Text gamemodesText;
+		static Material buttonMaterial = ((GorillaPressableButton)FindObjectOfType(typeof(GorillaPressableButton))).unpressedMaterial;
+        Text gamemodesText;
 
 		int page;
 
 		public void Initialize(Transform parent, Transform buttonParent, Transform gamemodesList)
 		{
 			transform.parent = parent;
-
-			var buttons = Enumerable.Range(0, PageSize).Select(x => buttonParent.GetChild(x));
+            var buttons = Enumerable.Range(0, PageSize).Select(x => buttonParent.GetChild(x));
 			modeSelectButtons = buttons.Select(x => x.GetComponent<ModeSelectButton>()).ToArray();
 
 			gamemodesText = gamemodesList.gameObject.GetComponent<Text>();
