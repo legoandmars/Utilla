@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 namespace Utilla.HarmonyPatches
 {
 	[HarmonyPatch(typeof(GorillaTagger))]
-    [HarmonyPatch("Awake", MethodType.Normal)]
+    [HarmonyPatch("Start", MethodType.Normal)]
     static class PostInitializedPatch
 	{
 		public static Events events;
 
-		private async static void Postfix()
+		private static void Postfix()
         {
-			await Task.Yield();
-            events = new Events();
+			// await Task.Yield();
             events.TriggerGameInitialized();
         }
     }

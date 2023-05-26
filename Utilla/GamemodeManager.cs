@@ -35,7 +35,7 @@ namespace Utilla
 
 		List<PluginInfo> pluginInfos;
 
-		void Awake()
+		void Start()
 		{
 			Instance = this;
 			Events.RoomJoined += OnRoomJoin;
