@@ -26,10 +26,11 @@ namespace Utilla
 			modeSelectButtons = buttons.Select(x => x.GetComponent<ModeSelectButton>()).ToArray();
 
 			gamemodesText = gamemodesList.gameObject.GetComponent<Text>();
-            gamemodesText.lineSpacing = 1.06f * 1.2f;
-            gamemodesText.transform.localScale *= 0.85f;
-            gamemodesText.transform.position += gamemodesText.transform.right * 0.05f;
-            gamemodesText.horizontalOverflow = HorizontalWrapMode.Overflow;
+			gamemodesText.enabled = true;
+			gamemodesText.lineSpacing = 1.06f * 1.2f;
+			gamemodesText.transform.localScale *= 0.85f;
+			gamemodesText.transform.position += gamemodesText.transform.right * 0.05f;
+			gamemodesText.horizontalOverflow = HorizontalWrapMode.Overflow;
 
 			CreatePageButtons(buttons.First().gameObject);
 
@@ -47,12 +48,12 @@ namespace Utilla
 			{
 				GameObject button = GameObject.Instantiate(templateButton.transform.childCount == 0 ? fallbackTemplateButton : templateButton);
 				button.GetComponent<MeshFilter>().mesh = meshFilter.mesh;
-				button.GetComponent<Renderer>().material = templateButton.GetComponent<Renderer>().material;
+				button.GetComponent<Renderer>().material = templateButton.GetComponent<GorillaPressableButton>().unpressedMaterial;
 				button.transform.parent = templateButton.transform.parent;
 				button.transform.localRotation = templateButton.transform.localRotation;
 				button.transform.localScale = Vector3.one * 0.1427168f; // shouldn't hurt anyone for now 
 
-                button.transform.GetChild(0).gameObject.SetActive(true);
+				button.transform.GetChild(0).gameObject.SetActive(true);
 				Text buttonText = button.GetComponentInChildren<Text>();
 				if (buttonText != null)
 				{

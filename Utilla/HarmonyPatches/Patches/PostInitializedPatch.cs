@@ -1,24 +1,20 @@
 ﻿using UnityEngine;
 using HarmonyLib;
 using System.Collections;
+using System.Threading.Tasks;
 
 namespace Utilla.HarmonyPatches
 {
-	[HarmonyPatch(typeof(GorillaLocomotion.Player))]
-    [HarmonyPatch("Awake", MethodType.Normal)]
+	[HarmonyPatch(typeof(GorillaTagger))]
+    [HarmonyPatch("Start", MethodType.Normal)]
     static class PostInitializedPatch
 	{
 		public static Events events;
 
-		private static void Postfix(GorillaLocomotion.Player __instance)
+		private static void Postfix()
         {
-			__instance.StartCoroutine(DelayCoroutine());
-		}
-
-		static IEnumerator DelayCoroutine()
-		{
-			yield return 0;
-			events.TriggerGameInitialized();
-		}
+			// await Task.Yield();
+            events.TriggerGameInitialized();
+        }
     }
 }

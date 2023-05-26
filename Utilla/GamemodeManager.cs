@@ -35,7 +35,7 @@ namespace Utilla
 
 		List<PluginInfo> pluginInfos;
 
-		void Awake()
+		void Start()
 		{
 			Instance = this;
 			Events.RoomJoined += OnRoomJoin;
@@ -50,9 +50,10 @@ namespace Utilla
 			Gamemodes.AddRange(GetGamemodes(pluginInfos));
 			Gamemodes.ForEach(gamemode => AddGamemodeToPrefabPool(gamemode));
 
-			InitializeSelector("TreehouseSelector", "Level/lower level/UI", "Selector Buttons/anchor", "Tree Room Texts");
+			InitializeSelector("TreehouseSelector", "Level/lower level/UI", "Selector Buttons/anchor", "Selector Buttons/anchor");
 			InitializeSelector("MountainSelector", "Level/mountain", "Geometry/goodigloo/modeselectbox (1)/anchor", "UI/Text");
-			InitializeSelector("SkySelector", "Level/skyjungle/UI", "modeselectbox (2)/anchor", "Text");
+			InitializeSelector("SkySelector", "Level/skyjungle/UI/-- Clouds ModeSelectBox UI --/", "anchor", "ModeSelectorText");
+			InitializeSelector("BeachSelector", "Level/beach/BeachComputer/", "modeselectbox (3)/anchor/", "UI FOR BEACH COMPUTER");
 		}
 
 		void InitializeSelector(string name, string parentPath, string buttonPath, string gamemodesPath)

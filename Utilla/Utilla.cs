@@ -15,7 +15,7 @@ namespace Utilla
     {
         static Events events = new Events();
 
-        void Awake()
+        void Start()
         {
             RoomUtils.RoomCode = RoomUtils.RandomString(6); // Generate a random room code in case we need it
 
