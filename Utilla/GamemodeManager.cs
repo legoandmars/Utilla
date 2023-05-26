@@ -1,123 +1,264 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
-using Photon.Pun;
 using UnityEngine;
-using System.Reflection;
-using Utilla.HarmonyPatches;
+using System.Linq;
 using GorillaNetworking;
 using BepInEx;
+using System.Reflection;
+using System.Linq.Expressions;
+using Photon.Pun;
+using Utilla.Models;
 
-namespace Utilla.Utils
+namespace Utilla
 {
-    public static class RoomUtils
+    public class GamemodeManager : MonoBehaviour
     {
-        public static string RoomCode;
+        public static GamemodeManager Instance { get; private set; }
 
-        internal static string defaultQueue;
+        const string BasePrefabPath = "CustomGameManager/";
 
-        static GorillaNetworkJoinTrigger joinTrigger;
+        public int PageCount => Mathf.CeilToInt(Gamemodes.Count() / 4f);
 
-        internal static string RandomString(int length)
+        List<Gamemode> DefaultModdedGamemodes = new List<Gamemode>()
         {
-            System.Random random = new System.Random();
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-            return new string(Enumerable.Repeat(chars, length)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
+            new Gamemode("MODDED_CASUAL", "MODDED CASUAL", BaseGamemode.Casual),
+            new Gamemode("MODDED_DEFAULT", "MODDED", BaseGamemode.Infection),
+            new Gamemode("MODDED_HUNT", "MODDED HUNT", BaseGamemode.Hunt),
+            new Gamemode("MODDED_BATTLE", "MODDED BRAWL", BaseGamemode.Paintbrawl)
+        };
+        public List<Gamemode> Gamemodes { get; private set; } = new List<Gamemode>() {
+            new Gamemode("CASUAL", "CASUAL"),
+            new Gamemode("INFECTION", "INFECTION"),
+            new Gamemode("HUNT", "HUNT"),
+            new Gamemode("BATTLE", "PAINTBRAWL")
+        };
+
+        List<PluginInfo> pluginInfos;
+
+        void Awake()
+        {
+            Instance = this;
+            Events.RoomJoined += OnRoomJoin;
+            Events.RoomLeft += OnRoomLeft;
+
+            // transform.parent = GameObject.Find(UIRootPath).transform;
+
+            GorillaComputer.instance.currentGameMode = PlayerPrefs.GetString("currentGameMode", "INFECTION");
+
+            pluginInfos = GetPluginInfos();
+
+            Gamemodes.AddRange(GetGamemodes(pluginInfos));
+            Gamemodes.ForEach(gamemode => AddGamemodeToPrefabPool(gamemode));
+
+            InitializeSelector("TreehouseSelector", "Level/lower level/UI", "Selector Buttons/anchor", "Selector Buttons/anchor");
+            InitializeSelector("MountainSelector", "Level/mountain", "Geometry/goodigloo/modeselectbox (1)/anchor", "UI/Text");
+            InitializeSelector("SkySelector", "Level/skyjungle/UI/-- Clouds ModeSelectBox UI --/", "anchor", "ModeSelectorText");
+            InitializeSelector("BeachSelector", "Level/beach/BeachComputer/", "modeselectbox (3)/anchor/", "UI FOR BEACH COMPUTER");
         }
 
-        /// <summary>
-        /// Joins a private room from a sepcifc room code.
-        /// </summary>
-        public static void JoinPrivateLobby() => JoinPrivateLobby(RoomCode, PhotonNetworkController.Instance);
-
-        /// <inheritdoc cref="JoinPrivateLobby()"/>
-        /// <param name="__instance">Instance of PhotonNetworkController to use.</param>
-        public static void JoinPrivateLobby(PhotonNetworkController __instance) => JoinPrivateLobby(RoomCode, __instance);
-
-        /// <inheritdoc cref="JoinPrivateLobby()"/>
-        /// <param name="code">Room code to use.</param>
-        public static void JoinPrivateLobby(string code) => JoinPrivateLobby(code, false);
-
-        /// <inheritdoc cref="JoinPrivateLobby(string)"/>
-        /// <param name="casual">Whether or not to make the room casual.</param>
-        public static void JoinPrivateLobby(string code, bool casual = false) => JoinPrivateLobby(code, PhotonNetworkController.Instance, casual);
-
-        /// <inheritdoc cref="JoinPrivateLobby(string, bool)"/>
-        /// <inheritdoc cref="JoinPrivateLobby(PhotonNetworkController)"/>
-        public static void JoinPrivateLobby(string code, PhotonNetworkController __instance, bool casual = false)
+        void InitializeSelector(string name, string parentPath, string buttonPath, string gamemodesPath)
         {
-            RoomCode = code;
-            __instance.customRoomID = code;
-            __instance.isPrivate = true;
-            Debug.Log("attempting to connect");
-            __instance.AttemptToJoinSpecificRoom(code);
-
-            if (casual)
+            try
             {
-                PhotonNetworkPatch.setCasualPrivate = true;
-            }
-            return;
-        }
+                var selector = new GameObject(name).AddComponent<GamemodeSelector>();
+                Transform parent = GameObject.Find(parentPath).transform;
 
-        /// <summary>
-        /// Joins pseudo-public room using a queue.
-        /// </summary>
-        /// <param name="map">Name of the queue to use.</param>
-        public static void JoinModdedLobby(string map) => JoinModdedLobby(map, false);
-
-        /// <inheritdoc cref="JoinModdedLobby(string)"/>
-        /// <param name="casual">Whether or not to make the room casual.</param>
-        public static void JoinModdedLobby(string map, bool casual = false)
-        {
-            string gameModeName = "infection_MOD_" + map;
-            PhotonNetworkController photonNetworkController = PhotonNetworkController.Instance;
-
-            string queue = casual ? "CASUAL" : "DEFAULT";
-
-            defaultQueue = GorillaComputer.instance.currentQueue;
-            GorillaComputer.instance.currentQueue = queue;
-
-            // Setting player prefs is not needed
-            // PlayerPrefs.SetString("currentQueue", queue);
-            // PlayerPrefs.Save();
-
-            // What does this do?
-            FieldInfo field = photonNetworkController.GetType().GetField("pastFirstConnection", BindingFlags.Instance | BindingFlags.NonPublic);
-            field.SetValue(photonNetworkController, true);
-
-            // Go to code_MAP for maps while in a private
-            if (PhotonNetwork.InRoom && (PhotonNetwork.CurrentRoom.CustomProperties["gameMode"] as string).Contains("private"))
-            {
-                string customRoomID = photonNetworkController.customRoomID;
-                if (!customRoomID.Contains("_MAP"))
+                // child objects might be removed when gamemodes is released, keeping default behaviour for now
+                var ButtonParent = parent.Find(buttonPath);
+                foreach (Transform child in ButtonParent)
                 {
-                    Debug.Log("JOINING");
-                    JoinPrivateLobby(customRoomID + "_MAP", casual);
-                    return;
+                    if (child.gameObject.name.StartsWith("ENABLE FOR BETA"))
+                    {
+                        ButtonParent = child;
+                        break;
+                    }
+                }
+
+                // gameobject name for the text object changed but might change back after gamemodes is released
+                var GamemodesList = parent.Find(gamemodesPath);
+                foreach (Transform child in GamemodesList)
+                {
+                    if (child.gameObject.name.StartsWith("Game Mode List Text ENABLE FOR BETA"))
+                    {
+                        GamemodesList = child;
+                        break;
+                    }
+                }
+
+                selector.Initialize(parent, ButtonParent, GamemodesList);
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"Utilla: Failed to initialize {name}: {e}");
+            }
+
+        }
+
+        List<Gamemode> GetGamemodes(List<PluginInfo> infos)
+        {
+            List<Gamemode> gamemodes = new List<Gamemode>();
+            gamemodes.AddRange(DefaultModdedGamemodes);
+
+            HashSet<Gamemode> additonalGamemodes = new HashSet<Gamemode>();
+            foreach (var info in infos)
+            {
+                additonalGamemodes.UnionWith(info.Gamemodes);
+            }
+
+            foreach (var gamemode in DefaultModdedGamemodes)
+            {
+                additonalGamemodes.Remove(gamemode);
+            }
+
+            gamemodes.AddRange(additonalGamemodes);
+
+            return gamemodes;
+        }
+
+        List<PluginInfo> GetPluginInfos()
+        {
+            List<PluginInfo> infos = new List<PluginInfo>();
+            foreach (var info in BepInEx.Bootstrap.Chainloader.PluginInfos)
+            {
+                if (info.Value == null) continue;
+                BaseUnityPlugin plugin = info.Value.Instance;
+                if (plugin == null) continue;
+                Type type = plugin.GetType();
+
+                IEnumerable<Gamemode> gamemodes = GetGamemodes(type);
+
+                if (gamemodes.Count() > 0)
+                {
+                    infos.Add(new PluginInfo
+                    {
+                        Plugin = plugin,
+                        Gamemodes = gamemodes.ToArray(),
+                        OnGamemodeJoin = CreateJoinLeaveAction(plugin, type, typeof(ModdedGamemodeJoinAttribute)),
+                        OnGamemodeLeave = CreateJoinLeaveAction(plugin, type, typeof(ModdedGamemodeLeaveAttribute))
+                    });
                 }
             }
 
-            //photonNetworkController.currentGameType = gameModeName;
-            if (joinTrigger == null)
-            {
-                joinTrigger = new GameObject("UtillaJoinTrigger").AddComponent<GorillaNetworkJoinTrigger>();
-                joinTrigger.makeSureThisIsDisabled = Array.Empty<GameObject>();
-                joinTrigger.makeSureThisIsEnabled = Array.Empty<GameObject>();
-                joinTrigger.joinScreens = Array.Empty<GorillaLevelScreen>();
-                joinTrigger.leaveScreens = Array.Empty<GorillaLevelScreen>();
-            }
-            joinTrigger.gameModeName = gameModeName;
-            photonNetworkController.AttemptToJoinPublicRoom(joinTrigger);
+            return infos;
         }
 
-        internal static void ResetQueue()
+        Action<string> CreateJoinLeaveAction(BaseUnityPlugin plugin, Type baseType, Type attribute)
         {
-            if (!defaultQueue.IsNullOrWhiteSpace())
+            ParameterExpression param = Expression.Parameter(typeof(string));
+            ParameterExpression[] paramExpression = new ParameterExpression[] { param };
+            ConstantExpression instance = Expression.Constant(plugin);
+            BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+            Action<string> action = null;
+            foreach (var method in baseType.GetMethods(bindingFlags).Where(m => m.GetCustomAttribute(attribute) != null))
             {
-                GorillaComputer.instance.currentQueue = RoomUtils.defaultQueue;
-                defaultQueue = null;
+                var parameters = method.GetParameters();
+                MethodCallExpression methodCall;
+                if (parameters.Length == 0)
+                {
+                    methodCall = Expression.Call(instance, method);
+                }
+                else if (parameters.Length == 1 && parameters[0].ParameterType == typeof(string))
+                {
+                    methodCall = Expression.Call(instance, method, param);
+                }
+                else
+                {
+                    continue;
+                }
+
+                action += Expression.Lambda<Action<string>>(methodCall, paramExpression).Compile();
+            }
+
+            return action;
+        }
+
+        HashSet<Gamemode> GetGamemodes(Type type)
+        {
+            IEnumerable<ModdedGamemodeAttribute> attributes = type.GetCustomAttributes<ModdedGamemodeAttribute>();
+
+            HashSet<Gamemode> gamemodes = new HashSet<Gamemode>();
+            if (attributes != null)
+            {
+                foreach (ModdedGamemodeAttribute attribute in attributes)
+                {
+                    if (attribute.gamemode != null)
+                    {
+                        gamemodes.Add(attribute.gamemode);
+                    }
+                    else
+                    {
+                        gamemodes.UnionWith(DefaultModdedGamemodes);
+                    }
+                }
+            }
+
+            return gamemodes;
+        }
+
+        void AddGamemodeToPrefabPool(Gamemode gamemode)
+        {
+            if (gamemode.GameManager is null) return;
+
+            GameObject prefab = new GameObject(gamemode.ID);
+            prefab.SetActive(false);
+            prefab.AddComponent(gamemode.GameManager);
+            prefab.AddComponent<PhotonView>();
+
+            DefaultPool pool = PhotonNetwork.PrefabPool as DefaultPool;
+            pool.ResourceCache.Add(BasePrefabPath + prefab.name, prefab);
+        }
+
+        void OnRoomJoin(object sender, Events.RoomJoinedArgs args)
+        {
+            string gamemode = args.Gamemode;
+
+            if (PhotonNetwork.IsMasterClient)
+            {
+                foreach (Gamemode g in Gamemodes.Where(x => x.GameManager != null))
+                {
+                    if (gamemode.Contains(g.ID))
+                    {
+                        GameObject go = PhotonNetwork.InstantiateRoomObject(BasePrefabPath + g.ID, Vector3.zero, Quaternion.identity);
+                        go.SetActive(true);
+                        break;
+                    }
+                }
+            }
+
+            foreach (var pluginInfo in pluginInfos)
+            {
+                if (pluginInfo.Gamemodes.Any(x => gamemode.Contains(x.GamemodeString)))
+                {
+                    try
+                    {
+                        pluginInfo.OnGamemodeJoin?.Invoke(gamemode);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e);
+                    }
+                }
+            }
+        }
+
+        void OnRoomLeft(object sender, Events.RoomJoinedArgs args)
+        {
+            string gamemode = args.Gamemode;
+
+            foreach (var pluginInfo in pluginInfos)
+            {
+                if (pluginInfo.Gamemodes.Any(x => gamemode.Contains(x.GamemodeString)))
+                {
+                    try
+                    {
+                        pluginInfo.OnGamemodeLeave?.Invoke(gamemode);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.LogError(e);
+                    }
+                }
             }
         }
     }
