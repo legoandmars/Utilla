@@ -33,7 +33,9 @@ namespace Utilla
 
         void PostInitialized(object sender, EventArgs e)
 		{
-			new GameObject("CustomGamemodesManager").AddComponent<GamemodeManager>();
+            var go = new GameObject("CustomGamemodesManager");
+            var gmm = go.AddComponent<GamemodeManager>();
+            this.gameObject.GetComponent<UtillaNetworkController>().gameModeManager = gmm;
 		}
     }
 }
