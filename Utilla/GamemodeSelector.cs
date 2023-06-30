@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 using GorillaNetworking;
 using Utilla.Models;
+using UnityEngine.Events;
 
 namespace Utilla
 {
@@ -44,7 +45,7 @@ namespace Utilla
 			cube.SetActive(false);
 			MeshFilter meshFilter = cube.GetComponent<MeshFilter>();
 
-			GameObject CreatePageButton(string text, Action onPressed)
+			GameObject CreatePageButton(string text, UnityAction onPressed)
 			{
 				GameObject button = GameObject.Instantiate(templateButton.transform.childCount == 0 ? fallbackTemplateButton : templateButton);
 				button.GetComponent<MeshFilter>().mesh = meshFilter.mesh;
@@ -61,8 +62,11 @@ namespace Utilla
 					buttonText.transform.localScale = Vector3.Scale(buttonText.transform.localScale, new Vector3(2, 2, 1));
 				}
 
-				GameObject.Destroy(button.GetComponent<ModeSelectButton>());
-				button.AddComponent<PageButton>().onPressed += onPressed;
+				UnityEvent buttonEvent = new UnityEvent();
+				buttonEvent.AddListener(onPressed);
+
+                GameObject.Destroy(button.GetComponent<ModeSelectButton>());
+				button.AddComponent<GorillaPressableButton>().onPressButton = buttonEvent;
 
 				if (!button.GetComponentInParent<Canvas>())
 				{
