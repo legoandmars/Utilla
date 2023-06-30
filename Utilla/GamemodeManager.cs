@@ -207,7 +207,7 @@ namespace Utilla
 			pool.ResourceCache.Add(BasePrefabPath + prefab.name, prefab);
 		}
 
-		void OnRoomJoin(object sender, Events.RoomJoinedArgs args)
+		internal void OnRoomJoin(object sender, Events.RoomJoinedArgs args)
 		{
 			string gamemode = args.Gamemode;
 
@@ -240,7 +240,7 @@ namespace Utilla
 			}
 		}
 
-		void OnRoomLeft(object sender, Events.RoomJoinedArgs args)
+		internal void OnRoomLeft(object sender, Events.RoomJoinedArgs args)
 		{
 			string gamemode = args.Gamemode;
 

@@ -10,7 +10,7 @@ using Photon.Pun;
 namespace Utilla
 {
 
-	[BepInPlugin("org.legoandmars.gorillatag.utilla", "Utilla", "1.6.7")]
+	[BepInPlugin("org.legoandmars.gorillatag.utilla", "Utilla", "1.6.8")]
     public class Utilla : BaseUnityPlugin
     {
         static Events events = new Events();
@@ -33,7 +33,9 @@ namespace Utilla
 
         void PostInitialized(object sender, EventArgs e)
 		{
-			new GameObject("CustomGamemodesManager").AddComponent<GamemodeManager>();
+            var go = new GameObject("CustomGamemodesManager");
+            var gmm = go.AddComponent<GamemodeManager>();
+            this.gameObject.GetComponent<UtillaNetworkController>().gameModeManager = gmm;
 		}
     }
 }
