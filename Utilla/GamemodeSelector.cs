@@ -63,6 +63,7 @@ namespace Utilla
 
 				GameObject.Destroy(button.GetComponent<ModeSelectButton>());
 				button.AddComponent<PageButton>().onPressed += onPressed;
+				button.GetComponent<PageButton>().onPressButton = new UnityEngine.Events.UnityEvent();
 
 				if (!button.GetComponentInParent<Canvas>())
 				{

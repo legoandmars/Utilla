@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Linq.Expressions;
 using Photon.Pun;
 using Utilla.Models;
+using HarmonyLib;
 
 namespace Utilla
 {
@@ -203,8 +204,15 @@ namespace Utilla
 			prefab.AddComponent(gamemode.GameManager);
 			prefab.AddComponent<PhotonView>();
 
+			/*
 			DefaultPool pool = PhotonNetwork.PrefabPool as DefaultPool;
 			pool.ResourceCache.Add(BasePrefabPath + prefab.name, prefab);
+			*/
+
+			PhotonPrefabPool pool = PhotonNetwork.PrefabPool as PhotonPrefabPool;
+			FieldInfo hiddenPrefabDict = AccessTools.Field(typeof(PhotonPrefabPool), "networkPrefabs");
+			Dictionary<string, GameObject> prefabDict = hiddenPrefabDict.GetValue(pool) as Dictionary<string, GameObject>;
+			prefabDict.Add(BasePrefabPath + prefab.name, prefab);
 		}
 
 		internal void OnRoomJoin(object sender, Events.RoomJoinedArgs args)
