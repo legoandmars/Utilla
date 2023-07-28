@@ -51,10 +51,10 @@ namespace Utilla
 			Gamemodes.AddRange(GetGamemodes(pluginInfos));
 			Gamemodes.ForEach(gamemode => AddGamemodeToPrefabPool(gamemode));
 
-			InitializeSelector("TreehouseSelector", "Level/lower level/UI", "Selector Buttons/anchor", "Selector Buttons/anchor");
-			InitializeSelector("MountainSelector", "Level/mountain", "Geometry/goodigloo/modeselectbox (1)/anchor", "UI/Text");
-			InitializeSelector("SkySelector", "Level/skyjungle/UI/-- Clouds ModeSelectBox UI --/", "anchor", "ModeSelectorText");
-			InitializeSelector("BeachSelector", "Level/beach/BeachComputer/", "modeselectbox (3)/anchor/", "UI FOR BEACH COMPUTER");
+			InitializeSelector("TreehouseSelector", "Environment Objects/LocalObjects_Prefab/TreeRoom/TreeRoomInteractables/UI", "Selector Buttons/anchor", "Selector Buttons/anchor");
+			InitializeSelector("MountainSelector", "Environment Objects/LocalObjects_Prefab/Mountain", "Geometry/goodigloo/modeselectbox (1)/anchor", "UI/Text");
+			InitializeSelector("SkySelector", "Environment Objects/LocalObjects_Prefab/skyjungle/UI/-- Clouds ModeSelectBox UI --/", "anchor", "ModeSelectorText");
+			InitializeSelector("BeachSelector", "Environment Objects/LocalObjects_Prefab/Beach/BeachComputer/", "modeselectbox (3)/anchor/", "UI FOR BEACH COMPUTER");
 		}
 
 		void InitializeSelector(string name, string parentPath, string buttonPath, string gamemodesPath)
