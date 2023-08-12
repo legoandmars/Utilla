@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 using GorillaNetworking;
 using Utilla.Models;
+using GorillaExtensions;
 
 namespace Utilla
 {
@@ -67,7 +68,7 @@ namespace Utilla
 
 				if (!button.GetComponentInParent<Canvas>())
 				{
-					Canvas canvas = button.transform.parent.gameObject.AddComponent<Canvas>();
+					Canvas canvas = button.transform.parent.gameObject.GetOrAddComponent<Canvas>();
 					canvas.renderMode = RenderMode.WorldSpace;
 				}
 
