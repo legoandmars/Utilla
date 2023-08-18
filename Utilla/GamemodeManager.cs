@@ -51,54 +51,67 @@ namespace Utilla
 			Gamemodes.AddRange(GetGamemodes(pluginInfos));
 			Gamemodes.ForEach(gamemode => AddGamemodeToPrefabPool(gamemode));
 
-			ZoneManagement zm_Instance = FindObjectOfType<ZoneManagement>();
-			InitializeSelector("TreehouseSelector", FindZoneData(zm_Instance, GTZone.forest).rootGameObjects[1].transform.Find("TreeRoomInteractables/UI"),						"Selector Buttons/anchor",						"Selector Buttons/anchor") ;
-			InitializeSelector("MountainSelector",	FindZoneData(zm_Instance, GTZone.mountain).rootGameObjects[0].transform,													"Geometry/goodigloo/modeselectbox (1)/anchor",	"UI/Text");
-			InitializeSelector("SkySelector",		FindZoneData(zm_Instance, GTZone.skyJungle).rootGameObjects[0].transform.Find("UI/-- Clouds ModeSelectBox UI --/"),			"anchor",										"ModeSelectorText");
-			InitializeSelector("BeachSelector",		FindZoneData(zm_Instance, GTZone.beach).rootGameObjects[0].transform.Find("BeachComputer"),									"modeselectbox (3)/anchor/",					"UI FOR BEACH COMPUTER");
-		}
+			ZoneManagement zoneManager = FindObjectOfType<ZoneManagement>();
 
-		ZoneData FindZoneData(ZoneManagement zm_Instance, GTZone zone)
-			=> (ZoneData)AccessTools.Method(zm_Instance.GetType(), "GetZoneData").Invoke(zm_Instance, new object[] { zone });
+			ZoneData FindZoneData(GTZone zone)
+				=> (ZoneData)AccessTools.Method(typeof(ZoneManagement), "GetZoneData").Invoke(zoneManager, new object[] { zone });
+
+			InitializeSelector("TreehouseSelector",
+				FindZoneData(GTZone.forest).rootGameObjects[1].transform.Find("TreeRoomInteractables/UI"),
+				"Selector Buttons/anchor",
+				"Selector Buttons/anchor"
+			);
+			InitializeSelector("MountainSelector",
+				FindZoneData(GTZone.mountain).rootGameObjects[0].transform,
+				"Geometry/goodigloo/modeselectbox (1)/anchor",
+				"UI/Text"
+			);
+			InitializeSelector("SkySelector",
+				FindZoneData(GTZone.skyJungle).rootGameObjects[0].transform.Find("UI/-- Clouds ModeSelectBox UI --/"),
+				"anchor",
+				"ModeSelectorText"
+			);
+			InitializeSelector("BeachSelector",
+				FindZoneData(GTZone.beach).rootGameObjects[0].transform.Find("BeachComputer"),
+				"modeselectbox (3)/anchor/",
+				"UI FOR BEACH COMPUTER"
+			);
+		}
 
 		void InitializeSelector(string name, Transform parent, string buttonPath, string gamemodesPath)
 		{
-            try
-            {
-                var selector = new GameObject(name).AddComponent<GamemodeSelector>();
+			try
+			{
+				var selector = new GameObject(name).AddComponent<GamemodeSelector>();
 
-                // child objects might be removed when gamemodes is released, keeping default behaviour for now
-                var ButtonParent = parent.Find(buttonPath);
-                foreach (Transform child in ButtonParent)
-                {
-                    if (child.gameObject.name.StartsWith("ENABLE FOR BETA"))
-                    {
-                        ButtonParent = child;
-                        break;
-                    }
-                }
+				// child objects might be removed when gamemodes is released, keeping default behaviour for now
+				var ButtonParent = parent.Find(buttonPath);
+				foreach(Transform child in ButtonParent) {
+					if (child.gameObject.name.StartsWith("ENABLE FOR BETA"))
+					{
+						ButtonParent = child;
+						break;
+					}
+				}
 
-                // gameobject name for the text object changed but might change back after gamemodes is released
-                var GamemodesList = parent.Find(gamemodesPath);
-                foreach (Transform child in GamemodesList)
-                {
-                    if (child.gameObject.name.StartsWith("Game Mode List Text ENABLE FOR BETA"))
-                    {
-                        GamemodesList = child;
-                        break;
-                    }
-                }
+				// gameobject name for the text object changed but might change back after gamemodes is released
+				var GamemodesList = parent.Find(gamemodesPath);
+				foreach (Transform child in GamemodesList) {
+					if (child.gameObject.name.StartsWith("Game Mode List Text ENABLE FOR BETA"))
+					{
+						GamemodesList = child;
+						break;
+					}
+				}
 
-                selector.Initialize(parent, ButtonParent, GamemodesList);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError($"Utilla: Failed to initialize {name}: {e}");
-            }
-        }
+				selector.Initialize(parent, ButtonParent, GamemodesList);
+			}
+			catch (Exception e)
+			{
+				Debug.LogError($"Utilla: Failed to initialize {name}: {e}");
+			}
 
-		void InitializeSelector(string name, string parentPath, string buttonPath, string gamemodesPath)
-			=> InitializeSelector(name, GameObject.Find(parentPath).transform, buttonPath, gamemodesPath);
+		}
 
 		List<Gamemode> GetGamemodes(List<PluginInfo> infos)
 		{
