@@ -51,18 +51,38 @@ namespace Utilla
 			Gamemodes.AddRange(GetGamemodes(pluginInfos));
 			Gamemodes.ForEach(gamemode => AddGamemodeToPrefabPool(gamemode));
 
-			InitializeSelector("TreehouseSelector", "Level/lower level/UI", "Selector Buttons/anchor", "Selector Buttons/anchor");
-			InitializeSelector("MountainSelector", "Level/mountain", "Geometry/goodigloo/modeselectbox (1)/anchor", "UI/Text");
-			InitializeSelector("SkySelector", "Level/skyjungle/UI/-- Clouds ModeSelectBox UI --/", "anchor", "ModeSelectorText");
-			InitializeSelector("BeachSelector", "Level/beach/BeachComputer/", "modeselectbox (3)/anchor/", "UI FOR BEACH COMPUTER");
+			ZoneManagement zoneManager = FindObjectOfType<ZoneManagement>();
+
+			ZoneData FindZoneData(GTZone zone)
+				=> (ZoneData)AccessTools.Method(typeof(ZoneManagement), "GetZoneData").Invoke(zoneManager, new object[] { zone });
+
+			InitializeSelector("TreehouseSelector",
+				FindZoneData(GTZone.forest).rootGameObjects[1].transform.Find("TreeRoomInteractables/UI"),
+				"Selector Buttons/anchor",
+				"Selector Buttons/anchor"
+			);
+			InitializeSelector("MountainSelector",
+				FindZoneData(GTZone.mountain).rootGameObjects[0].transform,
+				"Geometry/goodigloo/modeselectbox (1)/anchor",
+				"UI/Text"
+			);
+			InitializeSelector("SkySelector",
+				FindZoneData(GTZone.skyJungle).rootGameObjects[0].transform.Find("UI/-- Clouds ModeSelectBox UI --/"),
+				"anchor",
+				"ModeSelectorText"
+			);
+			InitializeSelector("BeachSelector",
+				FindZoneData(GTZone.beach).rootGameObjects[0].transform.Find("BeachComputer"),
+				"modeselectbox (3)/anchor/",
+				"UI FOR BEACH COMPUTER"
+			);
 		}
 
-		void InitializeSelector(string name, string parentPath, string buttonPath, string gamemodesPath)
+		void InitializeSelector(string name, Transform parent, string buttonPath, string gamemodesPath)
 		{
 			try
 			{
 				var selector = new GameObject(name).AddComponent<GamemodeSelector>();
-				Transform parent = GameObject.Find(parentPath).transform;
 
 				// child objects might be removed when gamemodes is released, keeping default behaviour for now
 				var ButtonParent = parent.Find(buttonPath);

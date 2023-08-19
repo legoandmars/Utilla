@@ -105,17 +105,13 @@ namespace Utilla
 
 		private string GetAssemblyHash()
 		{
-			string hash = "";
-			string hashPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-
-			hashPath = System.IO.Path.GetFullPath(System.IO.Path.Combine(hashPath, @"../../../../Gorilla Tag_Data/Managed/Assembly-CSharp.dll"));
-
+			string hashPath = string.Concat(System.IO.Directory.GetCurrentDirectory(), "\\Gorilla Tag_Data\\Managed\\Assembly-CSharp.dll");
 			byte[] assemblyBytes = System.IO.File.ReadAllBytes(hashPath);
 
 			System.Security.Cryptography.SHA256 sha = System.Security.Cryptography.SHA256.Create();
 
 			byte[] ShaByte = sha.ComputeHash(assemblyBytes);
-			hash = System.Convert.ToBase64String(ShaByte);
+            string hash = Convert.ToBase64String(ShaByte);
 
             return hash;
 		}
