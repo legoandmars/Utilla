@@ -15,30 +15,9 @@ namespace Utilla
 {
     public class UtillaNetworkController : MonoBehaviourPunCallbacks
     {
-		[Serializable]
-		public class DataClass
-		{
-			public string[] installedIDs;
-			public string[] known;
-			public string assemblyHash;
-
-        }
-
         public static Events events;
 
         Events.RoomJoinedArgs lastRoom;
-
-		private string assemblyHash;
-		private string AssemblyHash {
-			get {
-				if (assemblyHash != null) {
-					return assemblyHash;
-				} else {
-					assemblyHash = GetAssemblyHash();
-					return assemblyHash;
-				}
-			}
-		}
 
 		public GamemodeManager gameModeManager;
   
@@ -93,28 +72,8 @@ namespace Utilla
 
             lastRoom = args;
 
-			var table = new Hashtable();
-			var mods = new DataClass();
-			mods.installedIDs = BepInEx.Bootstrap.Chainloader.PluginInfos.Select(x => x.Value.Metadata.GUID).ToArray();
-			mods.assemblyHash = AssemblyHash;
-			table.Add("mods", JsonUtility.ToJson(mods));
-			PhotonNetwork.LocalPlayer.SetCustomProperties(table);
-
 			RoomUtils.ResetQueue();
         }
-
-		private string GetAssemblyHash()
-		{
-			string hashPath = string.Concat(System.IO.Directory.GetCurrentDirectory(), "\\Gorilla Tag_Data\\Managed\\Assembly-CSharp.dll");
-			byte[] assemblyBytes = System.IO.File.ReadAllBytes(hashPath);
-
-			System.Security.Cryptography.SHA256 sha = System.Security.Cryptography.SHA256.Create();
-
-			byte[] ShaByte = sha.ComputeHash(assemblyBytes);
-            string hash = Convert.ToBase64String(ShaByte);
-
-            return hash;
-		}
 
 		public override void OnLeftRoom()
 		{
