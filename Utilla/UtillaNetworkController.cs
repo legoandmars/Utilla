@@ -10,7 +10,6 @@ using System.Linq;
 using Utilla.Utils;
 using GorillaNetworking;
 using ExitGames.Client.Photon;
-using System.IO;
 
 namespace Utilla
 {
@@ -21,8 +20,8 @@ namespace Utilla
         Events.RoomJoinedArgs lastRoom;
 
 		public GamemodeManager gameModeManager;
-
-        public override void OnJoinedRoom()
+  
+		public override void OnJoinedRoom()
 		{
             // trigger events
             bool isPrivate = false;

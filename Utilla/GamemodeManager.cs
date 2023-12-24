@@ -56,27 +56,27 @@ namespace Utilla
 			ZoneData FindZoneData(GTZone zone)
 				=> (ZoneData)AccessTools.Method(typeof(ZoneManagement), "GetZoneData").Invoke(zoneManager, new object[] { zone });
 
-            InitializeSelector("TreehouseSelector",
-                FindZoneData(GTZone.forest).rootGameObjects[2].transform.Find("TreeRoomInteractables/UI"),
-                "Selector Buttons/anchor",
-                "Selector Buttons/anchor"
-            );
-            InitializeSelector("MountainSelector",
-                FindZoneData(GTZone.mountain).rootGameObjects[1].transform,
-                "Geometry/goodigloo/modeselectbox (1)/anchor",
-                "UI/Text"
-            );
-            InitializeSelector("SkySelector",
-                FindZoneData(GTZone.skyJungle).rootGameObjects[1].transform.Find("UI/-- Clouds ModeSelectBox UI --/"),
-                "anchor",
-                "ModeSelectorText"
-            );
-            InitializeSelector("BeachSelector",
-                FindZoneData(GTZone.beach).rootGameObjects[0].transform.Find("BeachComputer"),
-                "modeselectbox (3)/anchor/",
-                "UI FOR BEACH COMPUTER"
-            );
-        }
+			InitializeSelector("TreehouseSelector",
+				FindZoneData(GTZone.forest).rootGameObjects[2].transform.Find("TreeRoomInteractables/UI"),
+				"Selector Buttons/anchor",
+				"Selector Buttons/anchor"
+			);
+			InitializeSelector("MountainSelector",
+				FindZoneData(GTZone.mountain).rootGameObjects[1].transform,
+				"Geometry/goodigloo/modeselectbox (1)/anchor",
+				"UI/Text"
+			);
+			InitializeSelector("SkySelector",
+				FindZoneData(GTZone.skyJungle).rootGameObjects[1].transform.Find("UI/-- Clouds ModeSelectBox UI --/"),
+				"anchor",
+				"ModeSelectorText"
+			);
+			InitializeSelector("BeachSelector",
+				FindZoneData(GTZone.beach).rootGameObjects[0].transform.Find("BeachComputer"),
+				"modeselectbox (3)/anchor/",
+				"UI FOR BEACH COMPUTER"
+			);
+		}
 
 		void InitializeSelector(string name, Transform parent, string buttonPath, string gamemodesPath)
 		{
