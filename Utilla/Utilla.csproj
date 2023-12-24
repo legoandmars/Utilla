@@ -26,9 +26,6 @@
     <Reference Include="Cinemachine">
       <HintPath>$(GameAssemblyPath)\Cinemachine.dll</HintPath>
     </Reference>
-    <Reference Include="clipper_library">
-      <HintPath>$(GameAssemblyPath)\clipper_library.dll</HintPath>
-    </Reference>
     <Reference Include="Mono.Security">
       <HintPath>$(GameAssemblyPath)\Mono.Security.dll</HintPath>
     </Reference>
@@ -194,9 +191,6 @@
     <Reference Include="UnityEngine.TerrainPhysicsModule">
       <HintPath>$(GameAssemblyPath)\UnityEngine.TerrainPhysicsModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.TextCoreModule">
-      <HintPath>$(GameAssemblyPath)\UnityEngine.TextCoreModule.dll</HintPath>
-    </Reference>
     <Reference Include="UnityEngine.TextRenderingModule">
       <HintPath>$(GameAssemblyPath)\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
@@ -217,9 +211,6 @@
     </Reference>
     <Reference Include="UnityEngine.UmbraModule">
       <HintPath>$(GameAssemblyPath)\UnityEngine.UmbraModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.UNETModule">
-      <HintPath>$(GameAssemblyPath)\UnityEngine.UNETModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UnityAnalyticsModule">
       <HintPath>$(GameAssemblyPath)\UnityEngine.UnityAnalyticsModule.dll</HintPath>
