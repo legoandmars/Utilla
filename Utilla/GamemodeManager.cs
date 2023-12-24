@@ -57,17 +57,17 @@ namespace Utilla
 				=> (ZoneData)AccessTools.Method(typeof(ZoneManagement), "GetZoneData").Invoke(zoneManager, new object[] { zone });
 
 			InitializeSelector("TreehouseSelector",
-				FindZoneData(GTZone.forest).rootGameObjects[1].transform.Find("TreeRoomInteractables/UI"),
+				FindZoneData(GTZone.forest).rootGameObjects[2].transform.Find("TreeRoomInteractables/UI"),
 				"Selector Buttons/anchor",
 				"Selector Buttons/anchor"
 			);
 			InitializeSelector("MountainSelector",
-				FindZoneData(GTZone.mountain).rootGameObjects[0].transform,
+				FindZoneData(GTZone.mountain).rootGameObjects[1].transform,
 				"Geometry/goodigloo/modeselectbox (1)/anchor",
 				"UI/Text"
 			);
 			InitializeSelector("SkySelector",
-				FindZoneData(GTZone.skyJungle).rootGameObjects[0].transform.Find("UI/-- Clouds ModeSelectBox UI --/"),
+				FindZoneData(GTZone.skyJungle).rootGameObjects[1].transform.Find("UI/-- Clouds ModeSelectBox UI --/"),
 				"anchor",
 				"ModeSelectorText"
 			);
