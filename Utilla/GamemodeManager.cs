@@ -76,6 +76,11 @@ namespace Utilla
 				"modeselectbox (3)/anchor/",
 				"UI FOR BEACH COMPUTER"
 			);
+               		InitializeSelector("SwampSelector",
+				FindZoneData(GTZone.rotating).rootGameObjects[1].transform.Find("UI (1)/-- Rotating ModeSelectBox UI --"),
+                		"anchor/",
+                		"ModeSelectorText"
+            		);
 		}
 
 		void InitializeSelector(string name, Transform parent, string buttonPath, string gamemodesPath)
