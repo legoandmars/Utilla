@@ -82,9 +82,34 @@ public class ExamplePlugin : BaseUnityPlugin {}
 
 public class MyGameManager : GorillaGameManager
 {
+    // the game calls this when this is the gamemode for the room.
+    public override void StartPlaying()
+    {
+        // base needs to run for base GorillaGamanger functionality to run.
+        base.StartPlaying();
+    }
+
+    // called by game when you leave a room or gamemode is changed.
+    public override void StopPlaying()
+    {
+        // base needs to run for the game mode stop base GorillaGameManager functionality from running.
+        base.StopPlaying();
+    }
+
+    // called by the game when you leave a room after StopPlaying, use this for all important clean up and resetting the state of your game mode.
+    public override void Reset()
+    {
+    }
+
     public override string GameMode()
     {
         return "CUSTOM";
+    }
+
+    // GameModeType is an enum which is really an int, so any int value will work. make sure to use a unique value not taken by other game modes.
+    public override GameModeType GameType()
+    {
+        return 765;
     }
 
     public override int MyMatIndex(Player forPlayer)
