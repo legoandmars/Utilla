@@ -308,6 +308,7 @@ namespace Utilla
 			gtGameModeKeyByName[gamemode.GamemodeString] = gameModeKey;
 			gtGameModeKeyByName[gamemode.DisplayName] = gameModeKey;
 			gtGameModeNames.Add(gamemode.DisplayName);
+			gtGameModes.Add(gameMode);
 
 			prefab.transform.SetParent(moddedGameModesObject.transform);
 			prefab.SetActive(true);
