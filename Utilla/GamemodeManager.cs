@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using Photon.Pun;
 using Utilla.Models;
 using HarmonyLib;
+using UnityEngine.XR.Interaction.Toolkit.Filtering;
 
 namespace Utilla
 {
@@ -36,12 +37,36 @@ namespace Utilla
 
 		List<PluginInfo> pluginInfos;
 
+		FieldInfo fiGameModeInstance = typeof(GameMode).GetField("instance", BindingFlags.Static | BindingFlags.NonPublic);
+		GameMode gtGameModeInstance;
+
+		FieldInfo fiGameModeTable = typeof(GameMode).GetField("gameModeTable", BindingFlags.Static | BindingFlags.NonPublic);
+		Dictionary<int, GorillaGameManager> gtGameModeTable;
+
+		FieldInfo fiGameModeKeyByName = typeof(GameMode).GetField("gameModeKeyByName", BindingFlags.Static | BindingFlags.NonPublic);
+		Dictionary<string, int> gtGameModeKeyByName;
+
+		FieldInfo fiGameModes = typeof(GameMode).GetField("gameModes", BindingFlags.Static | BindingFlags.NonPublic);
+		List<GorillaGameManager> gtGameModes;
+
+		List<string> gtGameModeNames;
+
+		GameObject moddedGameModesObject;
+
 		void Start()
 		{
 			Instance = this;
 			Events.RoomJoined += OnRoomJoin;
 			Events.RoomLeft += OnRoomLeft;
 
+			gtGameModeInstance = fiGameModeInstance.GetValue(null) as GameMode;
+			gtGameModeTable = fiGameModeTable.GetValue(null) as Dictionary<int, GorillaGameManager>;
+			gtGameModeKeyByName = fiGameModeKeyByName.GetValue(null) as Dictionary<string, int>;
+			gtGameModes = fiGameModes.GetValue(null) as List<GorillaGameManager>;
+			gtGameModeNames = GameMode.gameModeNames;
+
+			moddedGameModesObject = new GameObject("Modded Game Modes");
+			moddedGameModesObject.transform.SetParent(gtGameModeInstance.gameObject.transform);
 			// transform.parent = GameObject.Find(UIRootPath).transform;
 
             GorillaComputer.instance.currentGameMode = PlayerPrefs.GetString("currentGameMode", "INFECTION");
@@ -218,22 +243,76 @@ namespace Utilla
 		void AddGamemodeToPrefabPool(Gamemode gamemode)
 		{
 			if (gamemode.GameManager is null) return;
+            if (gtGameModeKeyByName.ContainsKey(gamemode.GamemodeString) || gtGameModeKeyByName.ContainsKey(gamemode.DisplayName))
+            {
+                Debug.LogError($"game with name \"{gamemode.GamemodeString}\" or \"{gamemode.DisplayName}\" already exists");
+                return;
+            }
 
+			Type gmType = gamemode.GameManager;
+			if (gmType == null || !gmType.IsSubclassOf(typeof(GorillaGameManager)))
+			{
+				GameModeType gmKey;
+				switch(gamemode.BaseGamemode)
+				{
+					case BaseGamemode.Casual:
+					{
+						gmKey = GameModeType.Casual;
+						break;
+					}
+
+					case BaseGamemode.Infection:
+					{
+						gmKey = GameModeType.Infection;
+						break;
+					}
+
+					case BaseGamemode.Hunt:
+					{
+						gmKey = GameModeType.Hunt;
+						break;
+					}
+
+					case BaseGamemode.Paintbrawl:
+					{
+						gmKey = GameModeType.Battle;
+						break;
+					}
+
+					default:
+					{
+						return;
+						break;
+					}
+				}
+
+				gtGameModeKeyByName[gamemode.GamemodeString] = (int)gmKey;
+				gtGameModeKeyByName[gamemode.DisplayName] = (int)gmKey;
+				gtGameModeNames.Add(gamemode.DisplayName);
+				return;
+			}
+			
 			GameObject prefab = new GameObject(gamemode.ID);
 			prefab.SetActive(false);
-			prefab.AddComponent(gamemode.GameManager);
-			prefab.AddComponent<PhotonView>();
+			var gameMode = prefab.AddComponent(gamemode.GameManager) as GorillaGameManager;
+			int gameModeKey = (int)gameMode.GameType();		
 
-			/*
-			DefaultPool pool = PhotonNetwork.PrefabPool as DefaultPool;
-			pool.ResourceCache.Add(BasePrefabPath + prefab.name, prefab);
-			*/
+			if (gtGameModeTable.ContainsKey(gameModeKey))
+			{
+				Debug.LogError($"GameMode {gtGameModeTable[gameModeKey].GameModeName()} is already using GameType {gameModeKey}");
+				GameObject.Destroy(prefab);
+				return;
+			}
 
-			PhotonPrefabPool pool = PhotonNetwork.PrefabPool as PhotonPrefabPool;
-			FieldInfo hiddenPrefabDict = AccessTools.Field(typeof(PhotonPrefabPool), "networkPrefabs");
-			Dictionary<string, GameObject> prefabDict = hiddenPrefabDict.GetValue(pool) as Dictionary<string, GameObject>;
-			prefabDict.Add(BasePrefabPath + prefab.name, prefab);
-		}
+			gtGameModeTable[gameModeKey] = gameMode;
+			gtGameModeKeyByName[gamemode.GamemodeString] = gameModeKey;
+			gtGameModeKeyByName[gamemode.DisplayName] = gameModeKey;
+			gtGameModeNames.Add(gamemode.DisplayName);
+
+			prefab.transform.SetParent(moddedGameModesObject.transform);
+			prefab.SetActive(true);
+
+        }
 
 		internal void OnRoomJoin(object sender, Events.RoomJoinedArgs args)
 		{
