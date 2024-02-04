@@ -318,19 +318,6 @@ namespace Utilla
 		{
 			string gamemode = args.Gamemode;
 
-			if (PhotonNetwork.IsMasterClient)
-			{
-				foreach(Gamemode g in Gamemodes.Where(x => x.GameManager != null))
-				{
-					if (gamemode.Contains(g.ID))
-					{
-						GameObject go = PhotonNetwork.InstantiateRoomObject(BasePrefabPath + g.ID, Vector3.zero, Quaternion.identity);
-						go.SetActive(true);
-						break;
-					}
-				}
-			}
-
 			foreach (var pluginInfo in pluginInfos)
 			{
 				if (pluginInfo.Gamemodes.Any(x => gamemode.Contains(x.GamemodeString)))

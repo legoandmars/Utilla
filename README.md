@@ -101,15 +101,18 @@ public class MyGameManager : GorillaGameManager
     {
     }
 
-    public override string GameMode()
+    // gamemode names must not have spaces and must not contain "CASUAL", "INFECTION", "HUNT", or "BATTLE".
+    // names that contain the name of other custom gamemodes will confilict.
+    public override string GameModeName()
     {
         return "CUSTOM";
     }
 
-    // GameModeType is an enum which is really an int, so any int value will work. make sure to use a unique value not taken by other game modes.
+    // GameModeType is an enum which is really an int, so any int value will work. 
+    // make sure to use a unique value not taken by other game modes.
     public override GameModeType GameType()
     {
-        return 765;
+        return (GameModeType)765;
     }
 
     public override int MyMatIndex(Player forPlayer)
