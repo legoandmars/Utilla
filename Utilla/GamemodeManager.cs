@@ -69,7 +69,7 @@ namespace Utilla
 			moddedGameModesObject.transform.SetParent(gtGameModeInstance.gameObject.transform);
 			// transform.parent = GameObject.Find(UIRootPath).transform;
 
-            GorillaComputer.instance.currentGameMode = PlayerPrefs.GetString("currentGameMode", "INFECTION");
+            GorillaComputer.instance.currentGameMode.Value = PlayerPrefs.GetString("currentGameMode", "INFECTION");
 
 			pluginInfos = GetPluginInfos();
 
