@@ -1,15 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
-using GorillaNetworking;
-using BepInEx;
 using System.Reflection;
 using System.Linq.Expressions;
-using Photon.Pun;
-using Utilla.Models;
+using System.Collections.Generic;
+
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+using GorillaNetworking;
+using BepInEx;
 using HarmonyLib;
-using UnityEngine.XR.Interaction.Toolkit.Filtering;
+
+using Utilla.Models;
 
 namespace Utilla
 {
@@ -53,6 +55,60 @@ namespace Utilla
 
 		GameObject moddedGameModesObject;
 
+		struct GameModeSelectorPath
+		{
+			public string name;
+			public string buttonPath;
+			public string gamemodesPath;
+			public string transformToFind;
+		}
+
+		Dictionary<string, GameModeSelectorPath> gameModeButtonsDict = new Dictionary<string, GameModeSelectorPath>() {
+			{
+				"GorillaTag",
+				new GameModeSelectorPath() {
+					name = "TreehouseSelector",
+					buttonPath = "anchor",
+					gamemodesPath = "anchor",
+					transformToFind = "Environment Objects/LocalObjects_Prefab/TreeRoom/TreeRoomInteractables/UI/Selector Buttons"
+				}
+			},
+			{
+				"Beach",
+				new GameModeSelectorPath() {
+					name = "BeachSelector",
+					buttonPath = "modeselectbox (3)/anchor",
+					gamemodesPath = "UI FOR BEACH COMPUTER",
+					transformToFind = "Beach/BeachComputer"
+				}
+			},
+			{   "Mountain",
+				new GameModeSelectorPath() {
+					name = "MountainSelector",
+					buttonPath = "Geometry/goodigloo/modeselectbox (1)/anchor",
+					gamemodesPath = "UI/Text",
+					transformToFind = "Mountain"
+				}
+			},
+			{   "Skyjungle",
+				new GameModeSelectorPath() {
+					name = "SkySelector",
+					buttonPath = "anchor",
+					gamemodesPath = "ModeSelectorText",
+					transformToFind = "skyjungle/UI/-- Clouds ModeSelectBox UI --"
+				}
+			},
+			{
+				"Rotating",
+				new GameModeSelectorPath() {
+					name = "RotatingSelector",
+					buttonPath = "anchor",
+					gamemodesPath = "ModeSelectorText",
+					transformToFind = "RotatingMap/SwampLevel/UI (1)/-- Rotating ModeSelectBox UI --"
+                }
+			}
+		};
+
 		void Start()
 		{
 			Instance = this;
@@ -76,41 +132,29 @@ namespace Utilla
 			Gamemodes.AddRange(GetGamemodes(pluginInfos));
 			Gamemodes.ForEach(gamemode => AddGamemodeToPrefabPool(gamemode));
 
-			ZoneManagement zoneManager = FindObjectOfType<ZoneManagement>();
+			InitializeSelector(gameModeButtonsDict["GorillaTag"]);
 
-			ZoneData FindZoneData(GTZone zone)
-				=> (ZoneData)AccessTools.Method(typeof(ZoneManagement), "GetZoneData").Invoke(zoneManager, new object[] { zone });
-
-			InitializeSelector("TreehouseSelector",
-				FindZoneData(GTZone.forest).rootGameObjects[2].transform.Find("TreeRoomInteractables/UI"),
-				"Selector Buttons/anchor",
-				"Selector Buttons/anchor"
-			);
-			InitializeSelector("MountainSelector",
-				FindZoneData(GTZone.mountain).rootGameObjects[1].transform,
-				"Geometry/goodigloo/modeselectbox (1)/anchor",
-				"UI/Text"
-			);
-			InitializeSelector("SkySelector",
-				FindZoneData(GTZone.skyJungle).rootGameObjects[1].transform.Find("UI/-- Clouds ModeSelectBox UI --/"),
-				"anchor",
-				"ModeSelectorText"
-			);
-			InitializeSelector("BeachSelector",
-				FindZoneData(GTZone.beach).rootGameObjects[0].transform.Find("BeachComputer"),
-				"modeselectbox (3)/anchor/",
-				"UI FOR BEACH COMPUTER"
-			);
+			SceneManager.sceneLoaded += OnSceneChange;
 		}
 
-		void InitializeSelector(string name, Transform parent, string buttonPath, string gamemodesPath)
+		void OnSceneChange(Scene scene, LoadSceneMode loadMode)
+		{
+			if (gameModeButtonsDict.TryGetValue(scene.name, out var buttonData))
+			{
+				InitializeSelector(buttonData);
+			}
+		}
+
+		// void InitializeSelector(string name, Transform parent, string buttonPath, string gamemodesPath)
+		void InitializeSelector(GameModeSelectorPath gmPathData)
 		{
 			try
 			{
-				var selector = new GameObject(name).AddComponent<GamemodeSelector>();
+				Transform parent = GameObject.Find(gmPathData.transformToFind)?.transform;
+				var selector = new GameObject(gmPathData.name).AddComponent<GamemodeSelector>();
 
 				// child objects might be removed when gamemodes is released, keeping default behaviour for now
-				var ButtonParent = parent.Find(buttonPath);
+				var ButtonParent = parent.Find(gmPathData.buttonPath);
 				foreach(Transform child in ButtonParent) {
 					if (child.gameObject.name.StartsWith("ENABLE FOR BETA"))
 					{
@@ -120,7 +164,7 @@ namespace Utilla
 				}
 
 				// gameobject name for the text object changed but might change back after gamemodes is released
-				var GamemodesList = parent.Find(gamemodesPath);
+				var GamemodesList = parent.Find(gmPathData.gamemodesPath);
 				foreach (Transform child in GamemodesList) {
 					if (child.gameObject.name.StartsWith("Game Mode List Text ENABLE FOR BETA"))
 					{
