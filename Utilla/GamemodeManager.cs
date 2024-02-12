@@ -296,38 +296,18 @@ namespace Utilla
 			Type gmType = gamemode.GameManager;
 			if (gmType == null || !gmType.IsSubclassOf(typeof(GorillaGameManager)))
 			{
-				GameModeType gmKey;
-				switch(gamemode.BaseGamemode)
+				GameModeType? gmKey = gamemode.BaseGamemode switch
 				{
-					case BaseGamemode.Casual:
-					{
-						gmKey = GameModeType.Casual;
-						break;
-					}
+					BaseGamemode.Casual => GameModeType.Casual,
+					BaseGamemode.Infection => GameModeType.Infection,
+					BaseGamemode.Hunt => GameModeType.Hunt,
+					BaseGamemode.Paintbrawl => GameModeType.Battle,
+					_ => null
+				};
 
-					case BaseGamemode.Infection:
-					{
-						gmKey = GameModeType.Infection;
-						break;
-					}
-
-					case BaseGamemode.Hunt:
-					{
-						gmKey = GameModeType.Hunt;
-						break;
-					}
-
-					case BaseGamemode.Paintbrawl:
-					{
-						gmKey = GameModeType.Battle;
-						break;
-					}
-
-					default:
-					{
-						return;
-						break;
-					}
+				if (gmKey == null)
+				{
+					return;
 				}
 
 				gtGameModeKeyByName[gamemode.GamemodeString] = (int)gmKey;
