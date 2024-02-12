@@ -61,7 +61,7 @@ namespace Utilla
                     }
                 } 
             }
-			GorillaComputer.instance.currentGameModeText.text = "CURRENT MODE\n" + prefix;
+			GorillaComputer.instance.currentGameModeText.Value = "CURRENT MODE\n" + prefix;
 
 			Events.RoomJoinedArgs args = new Events.RoomJoinedArgs
             {
@@ -83,7 +83,7 @@ namespace Utilla
 				lastRoom = null;
 			}
 
-			GorillaComputer.instance.currentGameModeText.text = "CURRENT MODE\n-NOT IN ROOM-";
+			GorillaComputer.instance.currentGameModeText.Value = "CURRENT MODE\n-NOT IN ROOM-";
 		}
 
         public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
