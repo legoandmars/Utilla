@@ -12,6 +12,7 @@ using BepInEx;
 using HarmonyLib;
 
 using Utilla.Models;
+using GorillaGameModes;
 
 namespace Utilla
 {
