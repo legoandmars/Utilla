@@ -6,10 +6,11 @@ namespace Utilla.HarmonyPatches
 	[HarmonyPatch(typeof(NetworkSystemPUN), "get_lowestPingRegionIndex", MethodType.Normal)]
 	internal class PlayerRegionPatch
 	{
-		public static bool Prefix(ref int __result, ref NetworkRegionInfo[] ___regionData)
+		public static void Postfix(ref int __result)
 		{
-			__result = ___regionData.Select(data => data.playersInRegion).Max();
-            return false;
+            NetworkRegionInfo[] regionInfo = (NetworkRegionInfo[])AccessTools.Field(typeof(NetworkSystemPUN), "regionData").GetValue((NetworkSystemPUN)NetworkSystem.Instance);
+			int maxPlayersInRegions = regionInfo.Select(data => data.playersInRegion).Max();
+			__result = regionInfo.IndexOfRef(regionInfo.First(data => data.playersInRegion == maxPlayersInRegions));
         }
 	}
 }
