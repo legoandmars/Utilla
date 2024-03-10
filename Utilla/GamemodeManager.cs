@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 using GorillaNetworking;
+using GorillaGameModes;
 using BepInEx;
 using HarmonyLib;
 
@@ -29,7 +30,7 @@ namespace Utilla
 			new Gamemode("MODDED_CASUAL", "MODDED CASUAL", BaseGamemode.Casual),
 			new Gamemode("MODDED_DEFAULT", "MODDED", BaseGamemode.Infection),
 			new Gamemode("MODDED_HUNT", "MODDED HUNT", BaseGamemode.Hunt),
-            new Gamemode("MODDED_BATTLE", "MODDED BRAWL", BaseGamemode.Paintbrawl)
+            new Gamemode("MODDED_BATTLE", "MODDED BRAWL", BaseGamemode.PaintbrawlBattle)
         };
 		public List<Gamemode> Gamemodes { get; private set; } = new List<Gamemode>() { 
 			new Gamemode("CASUAL", "CASUAL"),
@@ -302,7 +303,7 @@ namespace Utilla
 					BaseGamemode.Casual => GameModeType.Casual,
 					BaseGamemode.Infection => GameModeType.Infection,
 					BaseGamemode.Hunt => GameModeType.Hunt,
-					BaseGamemode.Paintbrawl => GameModeType.Battle,
+					BaseGamemode.PaintbrawlBattle => GameModeType.Battle,
 					_ => null
 				};
 

@@ -29,8 +29,8 @@ namespace Utilla.Models
         /// <summary>
         /// Paintbrawl gamemode, a gamemode that lets you play a game of paintball with two or more players.
         /// </summary>
-        Paintbrawl
-    }
+        PaintbrawlBattle
+	}
 
 	public class Gamemode {
 		public const string GamemodePrefix = "MODDED_";
