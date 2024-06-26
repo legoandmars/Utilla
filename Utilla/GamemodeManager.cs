@@ -71,8 +71,8 @@ namespace Utilla
 					name = "TreehouseSelector",
 					buttonPath = "anchor",
 					gamemodesPath = "anchor",
-					transformToFind = "Environment Objects/LocalObjects_Prefab/TreeRoom/TreeRoomInteractables/UI/Selector Buttons"
-				}
+					transformToFind = "Environment Objects/LocalObjects_Prefab/TreeRoom/TreeRoomInteractables/UI/ModeSelector_Group/Selector Buttons"
+                }
 			},
 			{
 				"Beach",

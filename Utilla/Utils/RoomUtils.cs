@@ -46,13 +46,13 @@ namespace Utilla.Utils
 
 		/// <inheritdoc cref="JoinPrivateLobby(string, bool)"/>
 		/// <inheritdoc cref="JoinPrivateLobby(PhotonNetworkController)"/>
-		public static void JoinPrivateLobby(string code, PhotonNetworkController __instance, bool casual = false)
+		public static void JoinPrivateLobby(string code, PhotonNetworkController __instance, bool casual = false, JoinType joinType = JoinType.Solo)
 		{
 			RoomCode = code;
 			__instance.customRoomID = code;
 			__instance.isPrivate = true;
 			Debug.Log("attempting to connect");
-			__instance.AttemptToJoinSpecificRoom(code);
+			__instance.AttemptToJoinSpecificRoom(code, joinType);
 
 			if (casual)
 			{
@@ -105,8 +105,6 @@ namespace Utilla.Utils
 				joinTrigger = new GameObject("UtillaJoinTrigger").AddComponent<GorillaNetworkJoinTrigger>();
 				joinTrigger.makeSureThisIsDisabled = Array.Empty<GameObject>();
 				joinTrigger.makeSureThisIsEnabled = Array.Empty<GameObject>();
-				joinTrigger.joinScreens = Array.Empty<GorillaLevelScreen>();
-				joinTrigger.leaveScreens = Array.Empty<GorillaLevelScreen>();
 			}
 			joinTrigger.gameModeName = gameModeName;
 			photonNetworkController.AttemptToJoinPublicRoom(joinTrigger);
