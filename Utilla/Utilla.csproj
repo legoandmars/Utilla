@@ -3,17 +3,18 @@
   <PropertyGroup>
 	  <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>8.0</LangVersion>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>$(BepInExAssemblyPath)\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>$(GameAssemblyPath)\Assembly-CSharp.dll</HintPath>
-    </Reference>
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>$(GameAssemblyPath)\Assembly-CSharp-firstpass.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Gorilla Tag\Assembly-CSharp-publicized.dll</HintPath>
     </Reference>
     <Reference Include="BakeryRuntimeAssembly">
       <HintPath>$(GameAssemblyPath)\BakeryRuntimeAssembly.dll</HintPath>
@@ -68,6 +69,9 @@
     </Reference>
     <Reference Include="Unity.InputSystem">
       <HintPath>$(GameAssemblyPath)\Unity.InputSystem.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>$(GameAssemblyPath)\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Timeline">
       <HintPath>$(GameAssemblyPath)\Unity.Timeline.dll</HintPath>

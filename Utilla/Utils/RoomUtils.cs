@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using Photon.Pun;
 using UnityEngine;
 using System.Reflection;
-using Utilla.HarmonyPatches;
 using GorillaNetworking;
 using BepInEx;
+using Utilla.Models;
 
 namespace Utilla.Utils
 {
@@ -38,26 +36,38 @@ namespace Utilla.Utils
 
 		/// <inheritdoc cref="JoinPrivateLobby()"/>
 		/// <param name="code">Room code to use.</param>
-		public static void JoinPrivateLobby(string code) => JoinPrivateLobby(code, false);
+		public static void JoinPrivateLobby(string code) => JoinPrivateLobby(code, BaseGamemode.Infection);
 
 		/// <inheritdoc cref="JoinPrivateLobby(string)"/>
 		/// <param name="casual">Whether or not to make the room casual.</param>
-		public static void JoinPrivateLobby(string code, bool casual = false) => JoinPrivateLobby(code, PhotonNetworkController.Instance, casual);
+		public static void JoinPrivateLobby(string code, BaseGamemode gameMode) => JoinPrivateLobby(code, PhotonNetworkController.Instance, gameMode);
 
 		/// <inheritdoc cref="JoinPrivateLobby(string, bool)"/>
 		/// <inheritdoc cref="JoinPrivateLobby(PhotonNetworkController)"/>
-		public static void JoinPrivateLobby(string code, PhotonNetworkController __instance, bool casual = false, JoinType joinType = JoinType.Solo)
+		public static async void JoinPrivateLobby(string code, PhotonNetworkController __instance, BaseGamemode gameMode = BaseGamemode.Infection, JoinType joinType = JoinType.Solo)
 		{
 			RoomCode = code;
+
 			__instance.customRoomID = code;
 			__instance.isPrivate = true;
-			Debug.Log("attempting to connect");
-			__instance.AttemptToJoinSpecificRoom(code, joinType);
 
-			if (casual)
+			string currentGameMode = PlayerPrefs.GetString("currentGameMode", "INFECTION");
+
+            UtillaLogging.Info($"Attempting to connect to private room '{code}' in game mode '{gameMode}'.");
+
+			Gamemode targetGameMode = gameMode == BaseGamemode.None ? GamemodeManager.Instance.Gamemodes.Take(GamemodeSelector.PageSize).FirstOrDefault(gm => gm.ID == currentGameMode) : GamemodeManager.Instance.Gamemodes.Take(GamemodeSelector.PageSize).FirstOrDefault(gm => gm.BaseGamemode == gameMode);
+
+			if (targetGameMode == null)
 			{
-				PhotonNetworkPatch.setCasualPrivate = true;
+				UtillaLogging.Warning($"Game Mode with BaseGamemode '{gameMode}' could not be found, the current game mode will be used instead.");
 			}
+
+			GorillaComputer.instance.currentGameMode.Value = targetGameMode != null ? targetGameMode.ID : currentGameMode;
+
+            await __instance.AttemptToJoinSpecificRoomAsync(code, joinType);
+
+			GorillaComputer.instance.currentGameMode.Value = currentGameMode;
+
 			return;
 		}
 
@@ -65,16 +75,16 @@ namespace Utilla.Utils
 		/// Joins pseudo-public room using a queue.
 		/// </summary>
 		/// <param name="map">Name of the queue to use.</param>
-		public static void JoinModdedLobby(string map) => JoinModdedLobby(map, false);
+		public static void JoinModdedLobby(string map) => JoinModdedLobby(map, BaseGamemode.Infection);
 		
 		/// <inheritdoc cref="JoinModdedLobby(string)"/>
 		/// <param name="casual">Whether or not to make the room casual.</param>
-		public static void JoinModdedLobby(string map, bool casual = false)
+		public static void JoinModdedLobby(string map, BaseGamemode gameMode)
 		{
 			string gameModeName = "infection_MOD_" + map;
 			PhotonNetworkController photonNetworkController = PhotonNetworkController.Instance;
 
-			string queue = casual ? "CASUAL" : "DEFAULT";
+			string queue = "DEFAULT";
 
 			defaultQueue = GorillaComputer.instance.currentQueue;
 			GorillaComputer.instance.currentQueue = queue;
@@ -93,8 +103,8 @@ namespace Utilla.Utils
 				string customRoomID = photonNetworkController.customRoomID;
 				if (!customRoomID.Contains("_MAP"))
 				{
-					Debug.Log("JOINING");
-					JoinPrivateLobby(customRoomID + "_MAP", casual);
+					UtillaLogging.Info("Joining.");
+					JoinPrivateLobby(customRoomID + "_MAP", gameMode);
 					return;
 				}
 			}
@@ -106,7 +116,7 @@ namespace Utilla.Utils
 				joinTrigger.makeSureThisIsDisabled = Array.Empty<GameObject>();
 				joinTrigger.makeSureThisIsEnabled = Array.Empty<GameObject>();
 			}
-			joinTrigger.gameModeName = gameModeName;
+			joinTrigger.networkZone = gameModeName;
 			photonNetworkController.AttemptToJoinPublicRoom(joinTrigger);
 		}
 

@@ -37,7 +37,8 @@ namespace Utilla
 				}
             }
 
-			// TODO: Generate dynamically
+			// custom gamemode-names (which are used by GorillaComputer and are included in GorillaGameManager on the gamemode selectors) can be set by custom managers, just using the "CUSTOM" prefix isn't too great either, it's not specific enough
+			/*
 			var prefix = "ERROR";
 			if (gamemode.Contains(Models.Gamemode.GamemodePrefix))
 			{
@@ -62,6 +63,7 @@ namespace Utilla
                 } 
             }
 			GorillaComputer.instance.currentGameModeText.Value = "CURRENT MODE\n" + prefix;
+			*/ 
 
 			Events.RoomJoinedArgs args = new Events.RoomJoinedArgs
             {
@@ -98,7 +100,6 @@ namespace Utilla
 				
 			lastRoom.Gamemode = gameMode;
 			lastRoom.isPrivate = PhotonNetwork.CurrentRoom.IsVisible;
-
         }
     }
 }

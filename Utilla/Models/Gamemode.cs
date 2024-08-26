@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using UnityEngine;
 
 namespace Utilla.Models
 {
@@ -11,44 +13,65 @@ namespace Utilla.Models
 	public enum BaseGamemode
 	{
 		/// <summary>
-		/// No gamemode, only used for fully custom gamemodes.
+		/// There is no gamemode manager to rely on, this should only be used by the Utilla mod when preparing modded gamemodes or gamemodes using a unique gamemode manager.
 		/// </summary>
 		None,
+        /// <summary>
+        /// Infection gamemode, requires at least four participating players for infection and under for tag.
+        /// </summary>
+        Infection, 
 		/// <summary>
-		/// The regular infection (tag) gamemode.
-		/// </summary>
-		Infection, 
-		/// <summary>
-		/// Casual gamemode, no players are infected.
+		/// Casual gamemode, no players are affected by the gamemode, such as tagging or infecting.
 		/// </summary>
 		Casual,
 		/// <summary>
-		/// Hunt gamemode, requires at least 4 players.
+		/// Hunt gamemode, requires at least four participating players.
 		/// </summary>
 		Hunt,
         /// <summary>
-        /// Paintbrawl gamemode, a gamemode that lets you play a game of paintball with two or more players.
+        /// Paintbrawl gamemode, requires at least two participating players.
         /// </summary>
-        PaintbrawlBattle
+        Battle,
+		/// <summary>
+		/// Ambush gamemode, inherited from the Infection gamemode where taggers are hidden from the survivors.
+		/// </summary>
+		Ambush
 	}
 
 	public class Gamemode {
 		public const string GamemodePrefix = "MODDED_";
 
+		/// <summary>
+		/// The title of the Gamemode visible through the gamemode selector
+		/// </summary>
 		public string DisplayName { get; }
+
+		/// <summary>
+		/// The internal ID of the Gamemode
+		/// </summary>
 		public string ID { get; }
+
+		/// <summary>
+		/// The GamemodeString used in the CustomProperties of the Room
+		/// </summary>
 		public string GamemodeString { get; }
+
+		/// <summary>
+		/// The BaseGamemode being inherited
+		/// </summary>
 		public BaseGamemode BaseGamemode { get; }
 		public Type GameManager { get; }
 
-		public Gamemode(string id, string displayName, BaseGamemode baseGamemode = BaseGamemode.Infection)
+        public Gamemode(string id, string displayName, BaseGamemode baseGamemode = BaseGamemode.None)
 		{
-			this.ID = id;
-			this.DisplayName = displayName;
-			this.BaseGamemode = baseGamemode;
+            ID = id;
 
-			GamemodeString = GamemodePrefix + ID + (BaseGamemode == BaseGamemode.None ? "" : BaseGamemode.ToString().ToUpper());
-		}
+            DisplayName = displayName;
+
+            BaseGamemode = baseGamemode;
+
+            GamemodeString = (ID.Contains(GamemodePrefix) ? string.Empty : GamemodePrefix) + ID + (baseGamemode == BaseGamemode.None || Enum.GetNames(typeof(BaseGamemode)).Any(gm => ID.ToUpper().Contains(gm.ToUpper())) ? string.Empty : baseGamemode.ToString().ToUpper());
+        }
 
 		public Gamemode(string id, string displayName, Type gameManager)
 		{
@@ -69,5 +92,21 @@ namespace Utilla.Models
 
 			GamemodeString = ID;
 		}
-	}
+
+        public static implicit operator ModeSelectButtonInfoData(Gamemode gamemode)
+		{
+			return new ModeSelectButtonInfoData()
+			{
+				Mode = gamemode.ID,
+				ModeTitle = gamemode.DisplayName,
+				NewMode = false,
+				CountdownTo = null
+			};
+		}
+
+		public static implicit operator Gamemode(ModeSelectButtonInfoData modeSelectButtonInfo)
+		{
+			return new Gamemode(modeSelectButtonInfo.Mode, modeSelectButtonInfo.ModeTitle);
+		}
+    }
 }

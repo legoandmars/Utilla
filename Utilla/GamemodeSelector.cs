@@ -6,39 +6,97 @@ using System.Linq;
 using GorillaNetworking;
 using Utilla.Models;
 using GorillaExtensions;
+using HarmonyLib;
+using System.Globalization;
+using TMPro;
+using UnityEngine.Events;
 
 namespace Utilla
 {
 	public class GamemodeSelector : MonoBehaviour
 	{
-		const int PageSize = 4;
+		public const int PageSize = 4;
 
-		ModeSelectButton[] modeSelectButtons = Array.Empty<ModeSelectButton>();
+		GameModeSelectorButtonLayout layout;
 
-		Text gamemodesText;
+        ModeSelectButton[] modeSelectButtons = Array.Empty<ModeSelectButton>();
 
-		int page;
+        ModeSelectButtonInfoData[] baseSelectionInfo;
 
-		public void Initialize(Transform parent, Transform buttonParent, Transform gamemodesList)
+        static int _globalSelectionPage;
+
+		public void Initialize(Transform parent, Transform anchor, Transform buttonLayout)
 		{
+			if (!parent || !anchor || !buttonLayout)
+			{
+				UtillaLogging.Error("GamemodeSelector could not be initialized, all Transform parameters are required to ensure a smooth transition for custom gamemode usage.");
+				throw new NullReferenceException();
+			}
+
 			transform.parent = parent;
 
-			var buttons = Enumerable.Range(0, PageSize).Select(x => buttonParent.GetChild(x));
+			var selectorTitle = anchor.Find("GameModes Title Text");
+
+			if (selectorTitle)
+			{
+                selectorTitle.transform.localPosition += Vector3.right * -0.04f;
+			}
+
+			var buttons = Enumerable.Range(0, PageSize).Select(x => buttonLayout.GetChild(x));
+
 			modeSelectButtons = buttons.Select(x => x.GetComponent<ModeSelectButton>()).ToArray();
 
-			gamemodesText = gamemodesList.gameObject.GetComponent<Text>();
-			gamemodesText.enabled = true;
-			gamemodesText.lineSpacing = 1.06f * 1.2f;
-			gamemodesText.transform.localScale *= 0.85f;
-			gamemodesText.transform.position += gamemodesText.transform.right * 0.05f;
-			gamemodesText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            foreach (var mb in modeSelectButtons)
+			{
+				mb.transform.localPosition += Vector3.right * -0.055f;
 
-			CreatePageButtons(buttons.First().gameObject);
+				TMP_Text gamemodeTitle = (TMP_Text)AccessTools.Field(mb.GetType(), "gameModeTitle").GetValue(mb);
 
-			ShowPage(0);
+                gamemodeTitle.fontSize = 64f;
+                gamemodeTitle.transform.localPosition = new Vector3(gamemodeTitle.transform.localPosition.x, 0f, gamemodeTitle.transform.localPosition.z + 0.08f);
+			}
+
+			layout = buttonLayout.GetComponent<GameModeSelectorButtonLayout>();
+
+			baseSelectionInfo = ((GameModeSelectorButtonLayoutData)AccessTools.Field(layout.GetType(), "data").GetValue(layout)).Info;
+
+            CreatePageButtons(buttons.First().gameObject);
+
+			if (GamemodeManager.Instance.Gamemodes != null)
+			{
+				UtillaLogging.Log($"Current page of the GamemodeSelector is set to {_globalSelectionPage}.");
+                ShowPage(_globalSelectionPage);
+            }
 		}
 
-		static GameObject fallbackTemplateButton = null;
+		public void GetSelectorGamemodes(out List<Gamemode> baseGamemodes, out List<Gamemode> moddedGamemodes)
+		{
+            baseGamemodes = new List<Gamemode>();
+            moddedGamemodes = new List<Gamemode>();
+
+            if (modeSelectButtons == null || modeSelectButtons.Length == 0 || !layout) return;
+
+            for (int i = 0; i < modeSelectButtons.Length; i++)
+			{
+                ModeSelectButtonInfoData info = baseSelectionInfo[i];
+                baseGamemodes.Add(info);
+            }
+
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+
+			foreach(Gamemode bm in baseGamemodes)
+			{
+				bool isInfection = bm.DisplayName.ToUpper() == "INFECTION";
+				bool isBattle = bm.DisplayName.ToLower() == "paintbrawl";
+
+                BaseGamemode baseMode = isBattle ? BaseGamemode.Battle : isInfection ? BaseGamemode.Infection : Enum.Parse<BaseGamemode>(textInfo.ToTitleCase(bm.ID.ToLower())); // i.e (referencing the titlecase), INFECTION = Infection, PAINTBRAWL (displayname) = Paintbrawl
+                string moddedTitle = isBattle ? "MODDED BATTLE" :  isInfection ? "MODDED" : $"MODDED {bm.ID.ToUpper()}"; // i.e, INFECTION = MODDED, PAINTBRAWL (displayname) = MODDED BATTLE (id)
+
+                moddedGamemodes.Add(new Gamemode($"MODDED_{bm.ID.ToUpper()}", moddedTitle, baseMode));
+            }
+        }
+
+        static GameObject fallbackTemplateButton = null;
 		void CreatePageButtons(GameObject templateButton)
 		{
 			GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -62,9 +120,17 @@ namespace Utilla
 					buttonText.transform.localScale = Vector3.Scale(buttonText.transform.localScale, new Vector3(2, 2, 1));
 				}
 
+				TMP_Text tmpText = button.transform.Find("Title")?.GetComponent<TMP_Text>() ?? button.GetComponentInChildren<TMP_Text>();
+				if (tmpText)
+				{
+					tmpText.gameObject.SetActive(false);
+                }
+
+				var unityEvent = new UnityEvent();
+				unityEvent.AddListener(new UnityAction(onPressed));
+
 				GameObject.Destroy(button.GetComponent<ModeSelectButton>());
-				button.AddComponent<PageButton>().onPressed += onPressed;
-				button.GetComponent<PageButton>().onPressButton = new UnityEngine.Events.UnityEvent();
+				button.AddComponent<GorillaPressableButton>().onPressButton = unityEvent;
 
 				if (!button.GetComponentInParent<Canvas>())
 				{
@@ -76,10 +142,10 @@ namespace Utilla
 			}
 
 			GameObject nextPageButton = CreatePageButton("-->", NextPage);
-			nextPageButton.transform.localPosition = new Vector3(-0.575f, nextPageButton.transform.position.y, nextPageButton.transform.position.z);
+			nextPageButton.transform.localPosition = new Vector3(-0.775f, nextPageButton.transform.position.y + 0.005f, nextPageButton.transform.position.z);
 
 			GameObject previousPageButton = CreatePageButton("<--", PreviousPage);
-			previousPageButton.transform.localPosition = new Vector3(-0.575f, -0.318f, previousPageButton.transform.position.z);
+			previousPageButton.transform.localPosition = new Vector3(-0.775f, -0.633f, previousPageButton.transform.position.z);
 
 			Destroy(cube);
 
@@ -91,49 +157,47 @@ namespace Utilla
 
 		public void NextPage()
 		{
-			if (page < GamemodeManager.Instance.PageCount - 1)
+			if (_globalSelectionPage < GamemodeManager.Instance.PageCount - 1)
 			{
-				ShowPage(page + 1);
+				ShowPage(_globalSelectionPage + 1);
 			}
 		}
 
 		public void PreviousPage()
 		{
-			if (page > 0)
+			if (_globalSelectionPage > 0)
 			{
-				ShowPage(page - 1);
+				ShowPage(_globalSelectionPage - 1);
 			}
 		}
 
-		void ShowPage(int page)
+		public void ShowPage(int page)
 		{
-			this.page = page;
+            _globalSelectionPage = page;
+
 			List<Gamemode> currentGamemodes = GamemodeManager.Instance.Gamemodes.Skip(page * PageSize).Take(PageSize).ToList();
 
-			int counter = 0;
+			Gamemode nullGamemode = new Gamemode("", "");
+
 			for (int i = 0; i < modeSelectButtons.Length; i++)
 			{
 				if (i < currentGamemodes.Count)
 				{
-					modeSelectButtons[i].enabled = true;
-					modeSelectButtons[i].gameMode = currentGamemodes[i].GamemodeString;
+					Gamemode customMode = currentGamemodes[i];
+		
+                    modeSelectButtons[i].enabled = true;
+
+					modeSelectButtons[i].SetInfo(baseSelectionInfo.FirstOrDefault(i => i.Mode == customMode.ID) ?? customMode);
 				}
 				else
 				{
 					modeSelectButtons[i].enabled = false;
-					modeSelectButtons[i].gameMode = "";
-					counter++;
+
+					modeSelectButtons[i].SetInfo(nullGamemode);
 				}
 			}
 
-			string displayText = string.Join("\n", currentGamemodes.Select(x => x.DisplayName));
-			for (int i = 0; i < counter; i++)
-			{
-				displayText += '\n';
-			}
-			gamemodesText.text = displayText;
-
-			GorillaComputer.instance.OnModeSelectButtonPress(GorillaComputer.instance.currentGameMode.Value, GorillaComputer.instance.leftHanded);
-		}
+            GorillaComputer.instance.OnModeSelectButtonPress(GorillaComputer.instance.currentGameMode.Value, GorillaComputer.instance.leftHanded);
+        }
 	}
 }
