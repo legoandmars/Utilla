@@ -210,7 +210,7 @@ For references, create a Libs folder in the same folder as the project solution.
 BepInEx.dll
 BepInEx.Harmony.dll
 ``` 
-from `Gorilla Tag\BepInEx\plugins`, and
+from `Gorilla Tag\BepInEx\core`, and
 ```
 Assembly-CSharp.dll
 PhotonRealtime.dll
