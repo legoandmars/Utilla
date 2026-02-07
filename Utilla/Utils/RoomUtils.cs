@@ -1,122 +1,129 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Linq;
-using Photon.Pun;
-using UnityEngine;
-using System.Reflection;
-using Utilla.HarmonyPatches;
-using GorillaNetworking;
-using BepInEx;
 
 namespace Utilla.Utils
 {
-	public static class RoomUtils
-	{
-		public static string RoomCode;
+    [Obsolete]
+    public static class RoomUtils
+    {
+        public static string RoomCode;
 
-		internal static string defaultQueue;
+        // internal static string defaultQueue;
 
-		static GorillaNetworkJoinTrigger joinTrigger;
+        // static GorillaNetworkJoinTrigger joinTrigger;
 
-		internal static string RandomString(int length)
-		{
-			System.Random random = new System.Random();
-			const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-			return new string(Enumerable.Repeat(chars, length)
-			  .Select(s => s[random.Next(s.Length)]).ToArray());
-		}
+        internal static string RandomString(int length)
+        {
+            System.Random random = new System.Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
 
-		/// <summary>
-		/// Joins a private room from a sepcifc room code.
-		/// </summary>
-		public static void JoinPrivateLobby() => JoinPrivateLobby(RoomCode, PhotonNetworkController.Instance);
+        /*
+        /// <summary>
+        /// Joins a private room from a sepcifc room code.
+        /// </summary>
+        public static void JoinPrivateLobby() => JoinPrivateLobby(RoomCode, PhotonNetworkController.Instance);
 
-		/// <inheritdoc cref="JoinPrivateLobby()"/>
-		/// <param name="__instance">Instance of PhotonNetworkController to use.</param>
-		public static void JoinPrivateLobby(PhotonNetworkController __instance) => JoinPrivateLobby(RoomCode, __instance);
+        /// <inheritdoc cref="JoinPrivateLobby()"/>
+        /// <param name="__instance">Instance of PhotonNetworkController to use.</param>
+        public static void JoinPrivateLobby(PhotonNetworkController __instance) => JoinPrivateLobby(RoomCode, __instance);
 
-		/// <inheritdoc cref="JoinPrivateLobby()"/>
-		/// <param name="code">Room code to use.</param>
-		public static void JoinPrivateLobby(string code) => JoinPrivateLobby(code, false);
+        /// <inheritdoc cref="JoinPrivateLobby()"/>
+        /// <param name="code">Room code to use.</param>
+        public static void JoinPrivateLobby(string code) => JoinPrivateLobby(code, BaseGamemode.Infection);
 
-		/// <inheritdoc cref="JoinPrivateLobby(string)"/>
-		/// <param name="casual">Whether or not to make the room casual.</param>
-		public static void JoinPrivateLobby(string code, bool casual = false) => JoinPrivateLobby(code, PhotonNetworkController.Instance, casual);
+        /// <inheritdoc cref="JoinPrivateLobby(string)"/>
+        /// <param name="casual">Whether or not to make the room casual.</param>
+        public static void JoinPrivateLobby(string code, BaseGamemode gameMode) => JoinPrivateLobby(code, PhotonNetworkController.Instance, gameMode);
 
-		/// <inheritdoc cref="JoinPrivateLobby(string, bool)"/>
-		/// <inheritdoc cref="JoinPrivateLobby(PhotonNetworkController)"/>
-		public static void JoinPrivateLobby(string code, PhotonNetworkController __instance, bool casual = false, JoinType joinType = JoinType.Solo)
-		{
-			RoomCode = code;
-			__instance.customRoomID = code;
-			__instance.isPrivate = true;
-			Debug.Log("attempting to connect");
-			__instance.AttemptToJoinSpecificRoom(code, joinType);
+        /// <inheritdoc cref="JoinPrivateLobby(string, bool)"/>
+        /// <inheritdoc cref="JoinPrivateLobby(PhotonNetworkController)"/>
+        public static async void JoinPrivateLobby(string code, PhotonNetworkController __instance, BaseGamemode gameMode = BaseGamemode.Infection, JoinType joinType = JoinType.Solo)
+        {
+            RoomCode = code;
 
-			if (casual)
-			{
-				PhotonNetworkPatch.setCasualPrivate = true;
-			}
-			return;
-		}
+            __instance.customRoomID = code;
+            __instance.isPrivate = true;
 
-		/// <summary>
-		/// Joins pseudo-public room using a queue.
-		/// </summary>
-		/// <param name="map">Name of the queue to use.</param>
-		public static void JoinModdedLobby(string map) => JoinModdedLobby(map, false);
-		
-		/// <inheritdoc cref="JoinModdedLobby(string)"/>
-		/// <param name="casual">Whether or not to make the room casual.</param>
-		public static void JoinModdedLobby(string map, bool casual = false)
-		{
-			string gameModeName = "infection_MOD_" + map;
-			PhotonNetworkController photonNetworkController = PhotonNetworkController.Instance;
+            string currentGameMode = PlayerPrefs.GetString("currentGameMode", "INFECTION");
 
-			string queue = casual ? "CASUAL" : "DEFAULT";
+            Logging.Info($"Attempting to connect to private room '{code}' in game mode '{gameMode}'.");
 
-			defaultQueue = GorillaComputer.instance.currentQueue;
-			GorillaComputer.instance.currentQueue = queue;
+            Gamemode targetGameMode = gameMode == BaseGamemode.None ? GamemodeManager.Instance.Gamemodes.Take(Constants.PageSize).FirstOrDefault(gm => gm.ID == currentGameMode) : GamemodeManager.Instance.Gamemodes.Take(Constants.PageSize).FirstOrDefault(gm => gm.BaseGamemode.ToString() == gameMode.ToString());
 
-			// Setting player prefs is not needed
-			// PlayerPrefs.SetString("currentQueue", queue);
-			// PlayerPrefs.Save();
+            if (targetGameMode == null)
+            {
+                Logging.Warning($"Game Mode with BaseGamemode '{gameMode}' could not be found, the current game mode will be used instead.");
+            }
 
-			// What does this do?
-			FieldInfo field = photonNetworkController.GetType().GetField("pastFirstConnection", BindingFlags.Instance | BindingFlags.NonPublic);
-			field.SetValue(photonNetworkController, true);
+            GorillaComputer.instance.currentGameMode.Value = targetGameMode != null ? targetGameMode.ID : currentGameMode;
 
-			// Go to code_MAP for maps while in a private
-			if (PhotonNetwork.InRoom && (PhotonNetwork.CurrentRoom.CustomProperties["gameMode"] as string).Contains("private"))
-			{
-				string customRoomID = photonNetworkController.customRoomID;
-				if (!customRoomID.Contains("_MAP"))
-				{
-					Debug.Log("JOINING");
-					JoinPrivateLobby(customRoomID + "_MAP", casual);
-					return;
-				}
-			}
+            await __instance.AttemptToJoinSpecificRoomAsync(code, joinType, null);
 
-			//photonNetworkController.currentGameType = gameModeName;
-			if (joinTrigger == null)
-			{
-				joinTrigger = new GameObject("UtillaJoinTrigger").AddComponent<GorillaNetworkJoinTrigger>();
-				joinTrigger.makeSureThisIsDisabled = Array.Empty<GameObject>();
-				joinTrigger.makeSureThisIsEnabled = Array.Empty<GameObject>();
-			}
-			joinTrigger.gameModeName = gameModeName;
-			photonNetworkController.AttemptToJoinPublicRoom(joinTrigger);
-		}
+            GorillaComputer.instance.currentGameMode.Value = currentGameMode;
 
-		internal static void ResetQueue()
-		{
+            return;
+        }
+
+        /// <summary>
+        /// Joins pseudo-public room using a queue.
+        /// </summary>
+        /// <param name="map">Name of the queue to use.</param>
+        public static void JoinModdedLobby(string map) => JoinModdedLobby(map, BaseGamemode.Infection);
+
+        /// <inheritdoc cref="JoinModdedLobby(string)"/>
+        /// <param name="casual">Whether or not to make the room casual.</param>
+        public static void JoinModdedLobby(string map, BaseGamemode gameMode)
+        {
+            string gameModeName = "infection_MOD_" + map;
+            PhotonNetworkController photonNetworkController = PhotonNetworkController.Instance;
+
+            string queue = "DEFAULT";
+
+            defaultQueue = GorillaComputer.instance.currentQueue;
+            GorillaComputer.instance.currentQueue = queue;
+
+            // Setting player prefs is not needed
+            // PlayerPrefs.SetString("currentQueue", queue);
+            // PlayerPrefs.Save();
+
+            // What does this do?
+            FieldInfo field = photonNetworkController.GetType().GetField("pastFirstConnection", BindingFlags.Instance | BindingFlags.NonPublic);
+            field.SetValue(photonNetworkController, true);
+
+            // Go to code_MAP for maps while in a private
+            if (PhotonNetwork.InRoom && (PhotonNetwork.CurrentRoom.CustomProperties["gameMode"] as string).Contains("private"))
+            {
+                string customRoomID = photonNetworkController.customRoomID;
+                if (!customRoomID.Contains("_MAP"))
+                {
+                    Logging.Info("Joining.");
+                    JoinPrivateLobby(customRoomID + "_MAP", gameMode);
+                    return;
+                }
+            }
+
+            //photonNetworkController.currentGameType = gameModeName;
+            if (joinTrigger == null)
+            {
+                joinTrigger = new GameObject("UtillaJoinTrigger").AddComponent<GorillaNetworkJoinTrigger>();
+                joinTrigger.makeSureThisIsDisabled = Array.Empty<GameObject>();
+                joinTrigger.makeSureThisIsEnabled = Array.Empty<GameObject>();
+            }
+            joinTrigger.networkZone = gameModeName;
+            photonNetworkController.AttemptToJoinPublicRoom(joinTrigger);
+        }
+
+        internal static void ResetQueue()
+        {
             if (!defaultQueue.IsNullOrWhiteSpace())
-			{
+            {
                 GorillaComputer.instance.currentQueue = RoomUtils.defaultQueue;
-				defaultQueue = null;
-			}
-		}
-	}
+                defaultQueue = null;
+            }
+        }
+        */
+    }
 }
